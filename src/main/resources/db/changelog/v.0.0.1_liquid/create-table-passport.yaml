@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-table-passport
+      author: Mikhail
+      changes:
+        - createTable:
+            tableName: passport
+            schemaName: client_storage
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: serial
+                  type: varchar(5)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: number
+                  type: varchar(6)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: gender
+                  type: varchar(3)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: issued_by
+                  type: varchar(15)
+                  constraints:
+                    nullable: false
