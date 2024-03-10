@@ -13,7 +13,7 @@ databaseChangeLog:
                  constraints:
                    primaryKey: true
               - column:
-                  name: first_nane
+                  name: first_name
                   type: varchar(15)
                   constraints:
                     nullable: false
@@ -29,7 +29,7 @@ databaseChangeLog:
                     nullable: true
               - column:
                   name: mobile_phone
-                  type: varchar(10)
+                  type: varchar(12)
                   constraints:
                     unique: true
                     nullable: false
@@ -52,7 +52,7 @@ databaseChangeLog:
                   type: bigint
                   constraints:
                     unique: true
-                    nullable: false
+                    nullable: true
                     foreignKeyName: client_passport_id_fkey
                     references: client_storage.passport(id)
 

@@ -11,5 +11,5 @@ databaseChangeLog:
       file: db/changelog/v.0.0.1_liquid/create-table-client.yaml
   - include:
       file: db/changelog/v.0.0.1_liquid/create-table-address_client.yaml
-#  - include:
-#      file: db/changelog/v.0.0.1_liquid/load-data-from-csv.yaml
+  - include:
+      file: db/changelog/v.0.0.1_liquid/load-data-from-csv.yaml

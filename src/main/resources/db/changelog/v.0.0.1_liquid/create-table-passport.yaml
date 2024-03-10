@@ -30,6 +30,6 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: issued_by
-                  type: varchar(15)
+                  type: varchar(60)
                   constraints:
                     nullable: false
