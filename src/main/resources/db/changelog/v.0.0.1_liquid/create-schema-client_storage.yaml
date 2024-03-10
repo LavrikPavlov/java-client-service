@@ -1,0 +1,6 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-schema-client_storage
+      author: Mikhail
+      changes:
+        - sql: CREATE SCHEMA client_storage

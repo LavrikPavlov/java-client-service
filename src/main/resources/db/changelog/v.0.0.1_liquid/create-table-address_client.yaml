@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-table-address_client
+      author: Mikhail
+      changes:
+        - createTable:
+            tableName: address_client
+            schemaName: client_storage
+            columns:
+              - column:
+                  name: address_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: address_client_address_id_fkey
+                    references: client_storage.address(id)
+              - column:
+                  name: client_uuid
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: address_client_client_uuid_fkey
+                    references: client_storage.client(id)

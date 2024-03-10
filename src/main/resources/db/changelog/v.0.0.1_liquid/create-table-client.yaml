@@ -1,0 +1,59 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-table-client
+      author: Mikhail
+      changes:
+        - createTable:
+            tableName: client
+            schemaName: client_storage
+            columns:
+              - column:
+                 name: id
+                 type: UUID
+                 constraints:
+                   primaryKey: true
+              - column:
+                  name: first_name
+                  type: varchar(15)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: varchar(15)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: patronymic
+                  type: varchar(15)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: mobile_phone
+                  type: varchar(12)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: age
+                  type: integer
+                  constraints:
+                    checkConstraint: "age > 0"
+              - column:
+                  name: date_registration
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: integer
+                  defaultValue: "0"
+              - column:
+                  name: passport_id
+                  type: bigint
+                  constraints:
+                    unique: true
+                    nullable: true
+                    foreignKeyName: client_passport_id_fkey
+                    references: client_storage.passport(id)
+
+

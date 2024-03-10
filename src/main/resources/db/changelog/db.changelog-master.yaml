@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - context: dev
+  - logicalFilePath: db/changelog/db.changelog-master.yaml
+  - include:
+      file: db/changelog/v.0.0.1_liquid/create-schema-client_storage.yaml
+  - include:
+      file: db/changelog/v.0.0.1_liquid/create-table-passport.yaml
+  - include:
+      file: db/changelog/v.0.0.1_liquid/create-table-address.yaml
+  - include:
+      file: db/changelog/v.0.0.1_liquid/create-table-client.yaml
+  - include:
+      file: db/changelog/v.0.0.1_liquid/create-table-address_client.yaml
+  - include:
+      file: db/changelog/v.0.0.1_liquid/load-data-from-csv.yaml
