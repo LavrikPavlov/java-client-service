@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.kazan.clientservice.utils.convector.GenderEnumConverter;
 import ru.kazan.clientservice.utils.enums.GenderEnum;
 
 @Entity
@@ -20,11 +21,11 @@ public class Passport {
     private Long id;
     private Integer serial;
     private Integer number;
+
+    @Convert(converter = GenderEnumConverter.class)
     private GenderEnum gender;
 
     @Column(name = "issued_by")
     private String issuedBy;
 
-    @OneToOne(mappedBy = "passport")
-    private Client client;
 }

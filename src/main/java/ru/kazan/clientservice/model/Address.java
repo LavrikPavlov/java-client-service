@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Set;
-
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,7 +22,4 @@ public class Address {
     private String street;
     private Integer house;
     private Integer apartment;
-
-    @ManyToMany(mappedBy = "address")
-    private Set<Client> clients;
 }

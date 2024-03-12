@@ -29,10 +29,14 @@ dependencies {
     implementation 'org.postgresql:postgresql:42.7.1'
     implementation 'org.liquibase:liquibase-core:4.24.0'
 
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    implementation("org.projectlombok:lombok-mapstruct-binding:0.2.0")
+
     compileOnly 'org.projectlombok:lombok'
 
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
