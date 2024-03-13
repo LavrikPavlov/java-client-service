@@ -1,6 +1,8 @@
 package ru.kazan.clientservice.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,14 +24,22 @@ public class Client {
     private UUID id;
 
     @Column(name = "first_name")
+    @NotNull
     private String firstName;
 
     @Column(name = "last_name")
+    @NotNull
     private String lastName;
+
     private String patronymic;
 
     @Column(name = "mobile_phone")
+    @NotNull
     private String mobilePhone;
+
+    @Email
+    @NotNull
+    private String email;
 
     private Integer age;
 
