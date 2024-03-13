@@ -3,4 +3,4 @@ databaseChangeLog:
       id: create-schema-client_storage
       author: Mikhail
       changes:
-        - sql: CREATE SCHEMA client_storage
+        - sql: CREATE SCHEMA IF NOT EXISTS client_storage;

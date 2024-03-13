@@ -7,6 +7,7 @@ CREATE TABLE Client(
     patronymic varchar(15),
     mobile_phone varchar(10) not null unique,
     age int check ( age > 0 ),
+    email varchar(35) not null unique,
     date_registration date default CURRENT_DATE,
     status int default 0,
     passport_id bigint references Passport(id) unique
@@ -43,15 +44,15 @@ DROP TABLE Client;
 
 -----------------------
 
-INSERT INTO Client (id, first_name, last_name, patronymic, mobile_phone, age, date_registration, status, passport_id)
+INSERT INTO Client (id, first_name, last_name, patronymic, mobile_phone, age, email, date_registration, status, passport_id)
 VALUES
-    (gen_random_uuid(), 'Михаил', 'Казан', 'Павлович', '89069438723', 22, current_date, 1, 1),
-    (gen_random_uuid(), 'Евгений', 'Толмачев', 'Михалович', '89119931023', 37, current_date, 1, 2),
-    (gen_random_uuid(), 'Анастасия', 'Ломаченко', 'Дмитрьевна', '89992171176', 49, current_date, 1, 3),
-    (gen_random_uuid(), 'Алиса', 'Акопова', 'Владимировна', '89139229100', 19, current_date, 1, 4),
-    (gen_random_uuid(), 'Владимир', 'Ломонов', 'Евгеньевич', '89037102943', 61, current_date, 0, null),
-    (gen_random_uuid(), 'Асуна', 'Кожахметова', 'Тагировна', '89832871080', 18, current_date, 0, null),
-    (gen_random_uuid(), 'Алман', 'Архатавин', null, '8983962284', 29, current_date, 0, null);
+    (gen_random_uuid(), 'Михаил', 'Казан', 'Павлович', '89069438723', 22,'example@mail.ru', current_date, 1, 1),
+    (gen_random_uuid(), 'Евгений', 'Толмачев', 'Михалович', '89119931023', 37,'example2@mail.ru', current_date, 1, 2),
+    (gen_random_uuid(), 'Анастасия', 'Ломаченко', 'Дмитрьевна', '89992171176', 49,'example3@mail.ru', current_date, 1, 3),
+    (gen_random_uuid(), 'Алиса', 'Акопова', 'Владимировна', '89139229100', 19,'example4@mail.ru', current_date, 1, 4),
+    (gen_random_uuid(), 'Владимир', 'Ломонов', 'Евгеньевич', '89037102943', 61,'example5@mail.ru', current_date, 0, null),
+    (gen_random_uuid(), 'Асуна', 'Кожахметова', 'Тагировна', '89832871080', 18,'example6@mail.ru', current_date, 0, null),
+    (gen_random_uuid(), 'Алман', 'Архатавин', null, '8983962284', 29,'example7@mail.ru', current_date, 0, null);
 
 INSERT INTO Passport(serial, number, gender, issued_by)
 VALUES
