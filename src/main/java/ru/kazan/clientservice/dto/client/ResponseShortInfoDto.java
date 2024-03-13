@@ -2,6 +2,7 @@ package ru.kazan.clientservice.dto.client;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import ru.kazan.clientservice.utils.enums.ClientStatus;
 import ru.kazan.clientservice.utils.enums.GenderEnum;
 
 import java.util.UUID;
@@ -35,5 +36,5 @@ public class ResponseShortInfoDto {
     Integer age;
 
     @JsonProperty(value = "status")
-    String status;
+    ClientStatus status;
 }

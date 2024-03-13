@@ -3,6 +3,9 @@ package ru.kazan.clientservice.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.kazan.clientservice.dto.client.NewAddressDto;
+import ru.kazan.clientservice.dto.client.RequestEditEmailDto;
+import ru.kazan.clientservice.dto.client.RequestEditMobilePhoneDto;
 import ru.kazan.clientservice.dto.client.RequestInfoDto;
 import ru.kazan.clientservice.service.ClientService;
 
@@ -29,8 +32,20 @@ public class ClientController {
         };
     }
 
-    @PostMapping("/info")
-    public ResponseEntity<Void> editInfo(){
+    @PatchMapping("/edit/email")
+    public ResponseEntity<Void> editEmail(@RequestBody RequestEditEmailDto request){
+        clientService.changeEmail(request);
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/edit/mobile-phone")
+    public ResponseEntity<Void> editMobilePhone(@RequestBody RequestEditMobilePhoneDto request){
+        clientService.changeMobilePhone(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping
+    public void addNewAddress(@RequestBody NewAddressDto request){
+
     }
 }
