@@ -44,8 +44,9 @@ public class ClientController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping
-    public void addNewAddress(@RequestBody NewAddressDto request){
-
+    @PutMapping("/edit/address")
+    public ResponseEntity<Void> addNewAddress(@RequestBody NewAddressDto request){
+        clientService.addNewAddress(request);
+        return ResponseEntity.ok().build();
     }
 }

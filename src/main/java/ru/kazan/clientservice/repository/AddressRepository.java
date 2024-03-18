@@ -1,12 +1,12 @@
 package ru.kazan.clientservice.repository;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ru.kazan.clientservice.model.Address;
 
 import java.util.Optional;
+
 
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Long> {

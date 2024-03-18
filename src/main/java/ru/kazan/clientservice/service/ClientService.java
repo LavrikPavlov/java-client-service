@@ -3,8 +3,8 @@ package ru.kazan.clientservice.service;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PutMapping;
 import ru.kazan.clientservice.dto.client.*;
+import ru.kazan.clientservice.mapper.AddressMapper;
 import ru.kazan.clientservice.mapper.ClientMapper;
 import ru.kazan.clientservice.model.Address;
 import ru.kazan.clientservice.model.Client;
@@ -21,20 +21,23 @@ public class ClientService {
 
     private final AddressRepository addressRepository;
 
-    private final ClientMapper mapper;
+    private final ClientMapper clientMapper;
+
+    private final AddressMapper addressMapper;
 
     public ClientService(ClientRepository clientRepository, AddressRepository addressRepository,
-                         ClientMapper mapper) {
+                         ClientMapper clientMapper, AddressMapper addressMapper) {
         this.clientRepository = clientRepository;
         this.addressRepository = addressRepository;
-        this.mapper = mapper;
+        this.clientMapper = clientMapper;
+        this.addressMapper = addressMapper;
     }
 
     public ResponseShortInfoDto getShortInfoClient(RequestInfoDto dto){
         log.info("Get short info about Client");
 
         return clientRepository.findById(UUID.fromString(dto.getId()))
-                .map(mapper::toShrotInfoDto)
+                .map(clientMapper::toShrotInfoDto)
                 .orElseThrow(() -> new RuntimeException("Пользователя нет"));
     }
 
@@ -65,15 +68,26 @@ public class ClientService {
         log.info("Successful change client's mobile phone");
     }
 
-//    @Transactional
-//    public void addNewAddress(NewAddressDto dto){
-//
-//        Address address = addressRepository.findLikeAddress(dto.getCountry(), dto.getCity(), dto.getStreet(), dto.getHouse(), dto.getApartment())
-//                .ifPresentOrElse(presentAddress -> {
-//                    clientRepository.save(clientRepository.findById(UUID.fromString(dto.getId()))
-//                            .orElseThrow(() -> new RuntimeException("Пользователя нет")));
-//        }
-//        )
-//    }
+    @Transactional
+    public void addNewAddress(NewAddressDto dto){
+        Client client = clientRepository.findById(UUID.fromString(dto.getId()))
+                .orElseThrow(() -> new RuntimeException("Пользователя нет"));
+
+        Address address = addressMapper.toAddress(dto);
+
+        addressRepository.findLikeAddress(address.getCountry(),
+                        address.getCity(), address.getStreet(),
+                        address.getHouse(), address.getApartment())
+                .ifPresentOrElse(existAddress -> client.getAddress().add(existAddress),
+                        () -> {
+                    Address newAddress = addressRepository.save(address);
+                    client.getAddress().add(newAddress);
+                });
+
+        clientRepository.save(client);
+        log.info("Successful save address's client");
+
+    }
+
 
 }

@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: update-pkey-tables
+      author: Mikhail
+      changes:
+        - sql:
+            sql: SELECT setval('client_storage.passport_id_seq', (SELECT MAX(id) FROM client_storage.passport))
+        - sql:
+            sql: SELECT setval('client_storage.address_id_seq', (SELECT MAX(id) FROM client_storage.address))
