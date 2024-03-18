@@ -1,0 +1,193 @@
+openapi: 3.0.3
+info:
+  title: Client Service API
+  description: API for interacting with client information
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /client/info:
+    get:
+      summary: Get client information
+      description: Returns client information based on request type.
+      parameters:
+        - name: clientId
+          in: query
+          description: Client's id for search info
+          required: true
+          schema:
+            type: string
+          example: b3f62160-c084-41b1-8189-306d1906e2fb
+        - name: type
+          in: query
+          description: Type of information ('short' or 'full')
+          schema:
+            type: string
+          example: short
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseShortInfoDto'
+        '400':
+          description: Bad request
+
+  /client/edit/email:
+    patch:
+      summary: Edit client email
+      description: Update client's email address.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestEditEmailDto'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad request
+
+  /client/edit/mobile-phone:
+    patch:
+      summary: Edit client mobile phone
+      description: Update client's mobile phone number.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestEditMobilePhoneDto'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad request
+
+  /client/edit/address:
+    put:
+      summary: Add new address
+      description: Add a new address for the client.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewAddressDto'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad request
+
+components:
+  schemas:
+    ResponseShortInfoDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Уникальный идентификатор клиента
+          example: "7e0729ed-dc53-4ff7-b710-0ba6ebb65578"
+        first_name:
+          type: string
+          description: Имя клиента
+          example: "Алиса"
+        last_name:
+          type: string
+          description: Фамилия клиента
+          example: "Акопова"
+        patronymic:
+          type: string
+          description: Отчество клиента
+          example: "Владимировна"
+        gender:
+          type: string
+          description: Пол клиента
+          enum: [ "муж", "жен", "другой" ]
+          example: "жен"
+        mobile_phone:
+          type: string
+          description: Номер мобильного телефона клиента
+          example: "89139229100"
+        age:
+          type: integer
+          description: Возраст клиента
+          example: 19
+        status:
+          type: string
+          example: "Подтвержденный"
+      example:
+        id: "7e0729ed-dc53-4ff7-b710-0ba6ebb65578"
+        first_name: "Алиса"
+        last_name: "Акопова"
+        patronymic: "Владимировна"
+        gender: "жен"
+        mobile_phone: "89139229100"
+        age: 19
+        status: "Подтвержденный"
+
+
+    RequestEditEmailDto:
+      type: object
+      properties:
+        clientId:
+          type: string
+          example: "7e0729ed-dc53-4ff7-b710-0ba6ebb65578"
+        newEmail:
+          type: string
+          example: "alisa-new-email@mail.ru"
+      required:
+        - newEmail
+        - clientId
+
+    RequestEditMobilePhoneDto:
+      type: object
+      properties:
+        clientId:
+          type: string
+          example: "7e0729ed-dc53-4ff7-b710-0ba6ebb65578"
+        mobilePhone:
+          type: string
+          example: "89001231234"
+      required:
+        - mobilePhone
+        - clientId
+
+    NewAddressDto:
+      type: object
+      properties:
+        clientId:
+          type: string
+          format: uuid
+          description: Уникальный идентификатор клиента
+          example: "7e0729ed-dc53-4ff7-b710-0ba6ebb65578"
+        country:
+          type: string
+          description: Страна
+          example: "Россия"
+        city:
+          type: string
+          description: Город
+          example: "Астрахань"
+        street:
+          type: string
+          description: Улица
+          example: "Горская"
+        house:
+          type: string
+          description: Номер дома
+          example: "22"
+        apartment:
+          type: string
+          description: Номер квартиры
+          example: "47"
+      required:
+        - clientId
+        - country
+        - city
+        - street
+        - house

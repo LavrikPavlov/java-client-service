@@ -33,18 +33,18 @@ public class ClientService {
         this.addressMapper = addressMapper;
     }
 
-    public ResponseShortInfoDto getShortInfoClient(RequestInfoDto dto){
+    public ResponseShortInfoDto getShortInfoClient(String clientId){
         log.info("Get short info about Client");
 
-        return clientRepository.findById(UUID.fromString(dto.getId()))
+        return clientRepository.findById(UUID.fromString(clientId))
                 .map(clientMapper::toShrotInfoDto)
                 .orElseThrow(() -> new RuntimeException("Пользователя нет"));
     }
 
-    public Client getFullInfoClient(RequestInfoDto dto){
+    public Client getFullInfoClient(String clientId){
         log.info("Get full info about Client");
 
-        return clientRepository.findFullInfoClientById(UUID.fromString(dto.getId()))
+        return clientRepository.findFullInfoClientById(UUID.fromString(clientId))
                 .orElseThrow(() -> new RuntimeException("Пользователя нет"));
     }
 

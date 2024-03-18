@@ -3,7 +3,9 @@ package ru.kazan.clientservice.dto.client;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
-
+/**
+ * @RequestInfoDto not used
+ */
 @Getter
 @Setter
 @AllArgsConstructor
