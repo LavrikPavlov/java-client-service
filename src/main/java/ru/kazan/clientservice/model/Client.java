@@ -45,6 +45,7 @@ public class Client {
 
     @Column(name = "date_registration")
     private Date dateRegistration;
+
     private ClientStatus status;
 
     @OneToOne

@@ -1,5 +1,6 @@
 package ru.kazan.clientservice.utils.enums;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -11,4 +12,9 @@ public enum ClientStatus {
 
     private final Integer code;
     private final String text;
+
+    @JsonValue
+    public String getText() {
+        return text;
+    }
 }
