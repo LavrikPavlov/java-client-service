@@ -86,8 +86,37 @@ public class ClientService {
 
         clientRepository.save(client);
         log.info("Successful save address's client");
-
     }
 
+    @Transactional
+    public void deleteAddress(DeleteAddressDto dto){
+        Address address = addressRepository.findById(dto.getAddressId())
+                .orElseThrow(() -> new RuntimeException("Адресс отсутвует в БД"));
+
+        Client client = clientRepository.findById(UUID.fromString(dto.getId()))
+                .orElseThrow(() -> new RuntimeException("Пользователь отсутвует"));
+
+        if(!checkClientHaveAddress(address, client))
+            throw new RuntimeException("У пользователя отсутвует адресс");
+
+        if(!checkCountClientWithAddress(address)) {
+            client.getAddress().remove(address);
+            addressRepository.delete(address);
+        }
+
+        client.getAddress().remove(address);
+        clientRepository.save(client);
+    }
+
+    private boolean checkCountClientWithAddress(Address address){
+        int clientsCount = clientRepository.findClientByAddressContains(address)
+                .size();
+
+        return clientsCount > 1;
+    }
+
+    private boolean checkClientHaveAddress(Address address, Client client){
+        return client.getAddress().contains(address);
+    }
 
 }

@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Client Service API
   description: API for interacting with client information
-  version: 1.0.0
+  version: 0.0.1
 servers:
   - url: http://localhost:8080
 paths:
@@ -81,6 +81,25 @@ paths:
           description: OK
         '400':
           description: Bad request
+  /client/edit/delete/address:
+    delete:
+      summary: Delete client address
+      description: Deletes a client's address based on client and address ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteAddressDto'
+      responses:
+        '200':
+          description: Address deleted successfully
+        '400':
+          description: Bad request
+        '404':
+          description: Address not found
+        '500':
+          description: Internal server error
 
 components:
   schemas:
@@ -191,3 +210,19 @@ components:
         - city
         - street
         - house
+
+    DeleteAddressDto:
+      type: object
+      properties:
+        clientId:
+          type: string
+          format: uuid
+          description: Уникальный идентификатор клиента
+          example: "7e0729ed-dc53-4ff7-b710-0ba6ebb65578"
+        addressId:
+          type: integer
+          description: Идентификатор адреса, который нужно удалить
+          example: 4
+      required:
+        - clientId
+        - addressId

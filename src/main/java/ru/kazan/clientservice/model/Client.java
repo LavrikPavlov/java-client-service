@@ -52,7 +52,7 @@ public class Client {
     @JoinColumn(name = "passport_id", unique = true)
     private Passport passport;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.REMOVE)
     @JoinTable(
             name = "address_client",
             joinColumns = @JoinColumn(name = "client_uuid"),

@@ -3,6 +3,7 @@ package ru.kazan.clientservice.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.kazan.clientservice.dto.client.DeleteAddressDto;
 import ru.kazan.clientservice.dto.client.NewAddressDto;
 import ru.kazan.clientservice.dto.client.RequestEditEmailDto;
 import ru.kazan.clientservice.dto.client.RequestEditMobilePhoneDto;
@@ -46,6 +47,12 @@ public class ClientController {
     @PutMapping("/edit/address")
     public ResponseEntity<Void> addNewAddress(@RequestBody NewAddressDto request){
         clientService.addNewAddress(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/edit/delete/address")
+    public ResponseEntity<Void> deleteAddress(@RequestBody DeleteAddressDto request){
+        clientService.deleteAddress(request);
         return ResponseEntity.ok().build();
     }
 }
