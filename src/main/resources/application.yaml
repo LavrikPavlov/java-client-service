@@ -15,3 +15,8 @@ spring:
     change-log: db/changelog/db.changelog-master.yaml
     enabled: true
     contexts: dev
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    url: /client-service-api.yaml

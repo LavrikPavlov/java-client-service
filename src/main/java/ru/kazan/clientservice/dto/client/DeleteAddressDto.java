@@ -3,17 +3,16 @@ package ru.kazan.clientservice.dto.client;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RequestInfoDto {
+public class DeleteAddressDto {
 
-    @JsonProperty("clientId")
-    String id;
+    @JsonProperty(value = "clientId")
+    private String id;
 
-    @JsonProperty(required = true, value = "type")
-    String type;
+    @JsonProperty(value = "addressId")
+    private Long addressId;
 }
