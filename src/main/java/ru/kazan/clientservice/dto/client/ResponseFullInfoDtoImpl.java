@@ -2,9 +2,12 @@ package ru.kazan.clientservice.dto.client;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import ru.kazan.clientservice.model.Address;
+import ru.kazan.clientservice.model.Passport;
 import ru.kazan.clientservice.utils.enums.ClientStatus;
-import ru.kazan.clientservice.utils.enums.GenderEnum;
 
+import java.util.Date;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -12,7 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ResponseShortInfoDto {
+public class ResponseFullInfoDtoImpl implements ResponseInfoDto {
 
     @JsonProperty(value = "id")
     UUID id;
@@ -26,15 +29,25 @@ public class ResponseShortInfoDto {
     @JsonProperty(value = "patronymic")
     String patronymic;
 
-    @JsonProperty(value = "gender")
-    GenderEnum gender;
-
     @JsonProperty(value = "mobile_phone")
     String mobilePhone;
+
+    @JsonProperty(value = "email")
+    String email;
 
     @JsonProperty(value = "age")
     Integer age;
 
     @JsonProperty(value = "status")
     ClientStatus status;
+
+    @JsonProperty(value = "date_registration")
+    Date dateRegistration;
+
+    @JsonProperty(value = "passport")
+    Passport passport;
+
+    @JsonProperty(value = "addresses")
+    Set<Address> address;
+
 }

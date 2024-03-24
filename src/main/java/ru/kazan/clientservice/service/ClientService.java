@@ -4,6 +4,8 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.kazan.clientservice.dto.client.*;
+import ru.kazan.clientservice.exception.ApplicationException;
+import ru.kazan.clientservice.exception.ExceptionEnum;
 import ru.kazan.clientservice.mapper.AddressMapper;
 import ru.kazan.clientservice.mapper.ClientMapper;
 import ru.kazan.clientservice.model.Address;
@@ -33,25 +35,28 @@ public class ClientService {
         this.addressMapper = addressMapper;
     }
 
-    public ResponseShortInfoDto getShortInfoClient(String clientId){
+    public ResponseShortInfoDtoImpl getShortInfoClient(String clientId){
         log.info("Get short info about Client");
 
         return clientRepository.findById(UUID.fromString(clientId))
-                .map(clientMapper::toShrotInfoDto)
-                .orElseThrow(() -> new RuntimeException("Пользователя нет"));
+                .map(clientMapper::toShortInfoDto)
+                .orElseThrow(() -> new ApplicationException(ExceptionEnum.BAD_REQUEST));
     }
 
-    public Client getFullInfoClient(String clientId){
+    public ResponseFullInfoDtoImpl getFullInfoClient(String clientId){
         log.info("Get full info about Client");
 
-        return clientRepository.findFullInfoClientById(UUID.fromString(clientId))
-                .orElseThrow(() -> new RuntimeException("Пользователя нет"));
+        return clientRepository.findById(UUID.fromString(clientId))
+                .map(clientMapper::toFullInfoDto)
+                .orElseThrow(() -> new ApplicationException(ExceptionEnum.BAD_REQUEST));
     }
 
     @Transactional
     public void changeEmail(RequestEditEmailDto dto){
-        Client client = clientRepository.findById(UUID.fromString(dto.getId()))
-                .orElseThrow( () -> new RuntimeException("Пользователя нет"));
+        Client client = getClient(UUID.fromString(dto.getId()));
+
+        if(dto.getEmail().isEmpty())
+            throw new ApplicationException(ExceptionEnum.BAD_REQUEST);
 
         client.setEmail(dto.getEmail());
         clientRepository.save(client);
@@ -60,8 +65,10 @@ public class ClientService {
 
     @Transactional
     public void changeMobilePhone(RequestEditMobilePhoneDto dto){
-        Client client = clientRepository.findById(UUID.fromString(dto.getId()))
-                .orElseThrow( () -> new RuntimeException("Пользователя нет"));
+        Client client = getClient(UUID.fromString(dto.getId()));
+
+        if(dto.getMobilePhone().isEmpty())
+            throw new ApplicationException(ExceptionEnum.BAD_REQUEST);
 
         client.setMobilePhone(dto.getMobilePhone());
         clientRepository.save(client);
@@ -70,8 +77,7 @@ public class ClientService {
 
     @Transactional
     public void addNewAddress(NewAddressDto dto){
-        Client client = clientRepository.findById(UUID.fromString(dto.getId()))
-                .orElseThrow(() -> new RuntimeException("Пользователя нет"));
+        Client client = getClient(UUID.fromString(dto.getId()));
 
         Address address = addressMapper.toAddress(dto);
 
@@ -91,13 +97,12 @@ public class ClientService {
     @Transactional
     public void deleteAddress(DeleteAddressDto dto){
         Address address = addressRepository.findById(dto.getAddressId())
-                .orElseThrow(() -> new RuntimeException("Адресс отсутвует в БД"));
+                .orElseThrow(() -> new ApplicationException(ExceptionEnum.BAD_REQUEST));
 
-        Client client = clientRepository.findById(UUID.fromString(dto.getId()))
-                .orElseThrow(() -> new RuntimeException("Пользователь отсутвует"));
+        Client client = getClient(UUID.fromString(dto.getId()));
 
         if(!checkClientHaveAddress(address, client))
-            throw new RuntimeException("У пользователя отсутвует адресс");
+            throw new ApplicationException(ExceptionEnum.BAD_REQUEST);
 
         if(!checkCountClientWithAddress(address)) {
             client.getAddress().remove(address);
@@ -117,6 +122,11 @@ public class ClientService {
 
     private boolean checkClientHaveAddress(Address address, Client client){
         return client.getAddress().contains(address);
+    }
+
+    private Client getClient(UUID id){
+        return clientRepository.findById(id)
+                .orElseThrow(() -> new ApplicationException(ExceptionEnum.BAD_REQUEST));
     }
 
 }
