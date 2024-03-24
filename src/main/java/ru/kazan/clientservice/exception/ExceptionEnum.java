@@ -8,9 +8,6 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ExceptionEnum {
 
-    /**
-     * @HttpStatus is 400
-     */
 
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "Некорректный запрос. Проверте данные и попробуйте еще раз",
             "badRequestException"),
@@ -24,17 +21,21 @@ public enum ExceptionEnum {
     FORBIDDEN(HttpStatus.FORBIDDEN,
             "Запрещено. Отсутствуют права доступа к содержимому.",
             "forbiddenException"),
+    UNSUPPORTED_MEDIA_TYPE(HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+            "Формат запрашиваемых данных не поддерживается сервером, поэтому запрос отклонён.",
+            "unsupportedMediaType"),
 
-    /**
-     * @HttpStatus is 500
-     */
-
+    METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED,
+            "Метод не разрешен. Сервер знает о запрашиваемом методе, " +
+                    "но он был деактивирован и не может быть использован.",
+            "methodNotAllowedException"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,
             "Внутренняя ошибка сервера. Подождите несколько минут и попробуйте снова.",
             "internalServerError"),
     SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE,
             "Сервер временно недоступен по техническим причинам. Попробуйте позже.",
             "serviceUnavailable");
+
 
 
     private final HttpStatus httpStatus;

@@ -9,20 +9,14 @@ import org.springframework.http.HttpStatus;
 @Setter
 public class ApplicationException extends RuntimeException{
 
-    private ExceptionEnum exceptionEnum;
-    private HttpStatus httpStatus;
-    private String errorMessage;
+    private final ExceptionEnum exceptionEnum;
+    private final HttpStatus httpStatus;
+    private final String errorMessage;
 
     public ApplicationException(ExceptionEnum exceptionEnum){
         this.exceptionEnum = exceptionEnum;
         this.httpStatus = exceptionEnum.getHttpStatus();
         this.errorMessage = exceptionEnum.getErrorMessage();
-    }
-
-    public ApplicationException(ExceptionEnum exceptionEnum, String errorMessage){
-        this.exceptionEnum = exceptionEnum;
-        this.httpStatus = exceptionEnum.getHttpStatus();
-        this.errorMessage = errorMessage;
     }
 
     @Override

@@ -3,10 +3,9 @@ package ru.kazan.clientservice.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.kazan.clientservice.dto.client.DeleteAddressDto;
-import ru.kazan.clientservice.dto.client.NewAddressDto;
-import ru.kazan.clientservice.dto.client.RequestEditEmailDto;
-import ru.kazan.clientservice.dto.client.RequestEditMobilePhoneDto;
+import ru.kazan.clientservice.dto.client.*;
+import ru.kazan.clientservice.exception.ApplicationException;
+import ru.kazan.clientservice.exception.ExceptionEnum;
 import ru.kazan.clientservice.service.ClientService;
 
 @RestController
@@ -21,14 +20,15 @@ public class ClientController {
     }
 
     @GetMapping("/info")
-    public ResponseEntity<? extends Object> getInfo(@RequestParam String type, @RequestParam String clientId){
-        if(type == null)
+    public ResponseEntity<ResponseInfoDto> getInfo(@RequestParam(required = false) String type,
+                                                   @RequestParam String clientId){
+        if(type == null || type.isEmpty())
             type = "short";
 
         return switch (type) {
             case "short" -> ResponseEntity.ok(clientService.getShortInfoClient(clientId));
             case "full" -> ResponseEntity.ok(clientService.getFullInfoClient(clientId));
-            default -> ResponseEntity.badRequest().body("Ошибка");
+            default -> throw new ApplicationException(ExceptionEnum.BAD_REQUEST);
         };
     }
 
