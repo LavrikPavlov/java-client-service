@@ -24,7 +24,6 @@ public enum ExceptionEnum {
     UNSUPPORTED_MEDIA_TYPE(HttpStatus.UNSUPPORTED_MEDIA_TYPE,
             "Формат запрашиваемых данных не поддерживается сервером, поэтому запрос отклонён.",
             "unsupportedMediaType"),
-
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED,
             "Метод не разрешен. Сервер знает о запрашиваемом методе, " +
                     "но он был деактивирован и не может быть использован.",
@@ -34,7 +33,11 @@ public enum ExceptionEnum {
             "internalServerError"),
     SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE,
             "Сервер временно недоступен по техническим причинам. Попробуйте позже.",
-            "serviceUnavailable");
+            "serviceUnavailable"),
+    CONFLICT(HttpStatus.CONFLICT,
+            "Произошел конфликт. Внесенные данные были введены повторно.",
+            "userConflictException"
+            );
 
 
 

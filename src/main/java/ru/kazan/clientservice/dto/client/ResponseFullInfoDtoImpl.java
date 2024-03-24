@@ -6,7 +6,6 @@ import ru.kazan.clientservice.model.Address;
 import ru.kazan.clientservice.model.Passport;
 import ru.kazan.clientservice.utils.enums.ClientStatus;
 
-import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
@@ -42,7 +41,7 @@ public class ResponseFullInfoDtoImpl implements ResponseInfoDto {
     ClientStatus status;
 
     @JsonProperty(value = "date_registration")
-    Date dateRegistration;
+    String dateRegistration;
 
     @JsonProperty(value = "passport")
     Passport passport;

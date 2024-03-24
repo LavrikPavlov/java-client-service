@@ -4,8 +4,10 @@ package ru.kazan.clientservice.handler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -42,8 +44,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({HttpMessageNotReadableException.class,
-            MissingServletRequestParameterException.class,
-            NullPointerException.class})
+            MissingServletRequestParameterException.class})
     public ResponseEntity<ExceptionResponse> catchMessageNotReadableException(HttpServletRequest request) {
         ExceptionEnum exceptionMessage = ExceptionEnum.UNSUPPORTED_MEDIA_TYPE;
         ExceptionResponse response = getExceptionResponse(request, exceptionMessage);
@@ -57,21 +58,24 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, exceptionMessage.getHttpStatus());
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ExceptionResponse> catchOtherException(HttpServletRequest request) {
-        ExceptionEnum exceptionMessage = ExceptionEnum.INTERNAL_SERVER_ERROR;
-        ExceptionResponse response = getExceptionResponse(request, exceptionMessage);
-        return new ResponseEntity<>(response, exceptionMessage.getHttpStatus());
-    }
-
     @ExceptionHandler({
             MethodArgumentTypeMismatchException.class,
             MethodArgumentNotValidException.class,
             ConstraintViolationException.class,
-            IllegalArgumentException.class
+            IllegalArgumentException.class,
+            TransactionSystemException.class,
+            InvalidDataAccessApiUsageException.class,
+            NullPointerException.class
     })
     public ResponseEntity<ExceptionResponse> catchMethodArgumentTypeMismatchException(HttpServletRequest request) {
         ExceptionEnum exceptionMessage = ExceptionEnum.BAD_REQUEST;
+        ExceptionResponse response = getExceptionResponse(request, exceptionMessage);
+        return new ResponseEntity<>(response, exceptionMessage.getHttpStatus());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ExceptionResponse> catchOtherException(HttpServletRequest request) {
+        ExceptionEnum exceptionMessage = ExceptionEnum.INTERNAL_SERVER_ERROR;
         ExceptionResponse response = getExceptionResponse(request, exceptionMessage);
         return new ResponseEntity<>(response, exceptionMessage.getHttpStatus());
     }
