@@ -55,6 +55,11 @@ public class ClientService {
     public void changeEmail(RequestEditEmailDto dto){
         Client client = getClient(UUID.fromString(dto.getId()));
 
+        if(dto.getEmail().equals(client.getEmail())){
+            log.error("The email is identical to the data in the database");
+            throw new ApplicationException(ExceptionEnum.CONFLICT);
+        }
+
         if(dto.getEmail().isEmpty())
             throw new ApplicationException(ExceptionEnum.BAD_REQUEST);
 
@@ -66,6 +71,11 @@ public class ClientService {
     @Transactional
     public void changeMobilePhone(RequestEditMobilePhoneDto dto){
         Client client = getClient(UUID.fromString(dto.getId()));
+
+        if(dto.getMobilePhone().equals(client.getMobilePhone())) {
+            log.error("The phone number is identical to the data in the database");
+            throw new ApplicationException(ExceptionEnum.CONFLICT);
+        }
 
         if(dto.getMobilePhone().isEmpty())
             throw new ApplicationException(ExceptionEnum.BAD_REQUEST);
