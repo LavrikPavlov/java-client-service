@@ -25,7 +25,7 @@ public class ClientController {
         if(type == null || type.isEmpty())
             type = "short";
 
-        return switch (type) {
+        return switch (type.toLowerCase()) {
             case "short" -> ResponseEntity.ok(clientService.getShortInfoClient(clientId));
             case "full" -> ResponseEntity.ok(clientService.getFullInfoClient(clientId));
             default -> throw new ApplicationException(ExceptionEnum.BAD_REQUEST);

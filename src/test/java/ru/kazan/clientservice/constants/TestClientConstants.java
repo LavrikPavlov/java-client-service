@@ -4,11 +4,13 @@ package ru.kazan.clientservice.constants;
 import ru.kazan.clientservice.dto.client.ResponseFullInfoDtoImpl;
 import ru.kazan.clientservice.dto.client.ResponseShortInfoDtoImpl;
 import ru.kazan.clientservice.model.Address;
+import ru.kazan.clientservice.model.Client;
 import ru.kazan.clientservice.model.Passport;
 import ru.kazan.clientservice.utils.enums.ClientStatus;
 import ru.kazan.clientservice.utils.enums.GenderEnum;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -22,6 +24,43 @@ public class TestClientConstants {
     public static final String CLIENT_ID_CORRECT = "7e0729ed-dc53-4ff7-b710-0ba6ebb65578";
 
     public static final String CLIENT_ID_NOT_CORRECT = "7e07529ed-dc53-4A7-b710-0ba6ebb25578";
+
+    /**
+     * ENTITY
+     * @Client
+     * @Address
+     * @Passport
+     */
+
+    public static final Passport PASSPORT_DEFAULT = new Passport(
+            1L,
+            1111,
+            222333,
+            GenderEnum.MALE,
+            "Test"
+    );
+
+    public static final Address ADDRESS_DEFAULT = new Address(1L,
+            "Test",
+            "Test",
+            "Test",
+            1,
+            1
+    );
+
+    public static final Client CLIENT_DEFAULT = new Client(
+            UUID.fromString(CLIENT_ID_CORRECT),
+            "Test",
+            "Test",
+            "Test",
+            "89001112233",
+            "test@test.ru",
+            20,
+            new Date(),
+            ClientStatus.ACCEPT,
+            PASSPORT_DEFAULT,
+            new HashSet<>(Collections.singleton(ADDRESS_DEFAULT))
+    );
 
     /**
      * RESPONSE DTO FOR ANSWER
