@@ -24,6 +24,8 @@ paths:
           schema:
             type: string
           example: short
+      tags:
+        - ClientController (Информация о пользователе)
       responses:
         '200':
           description: OK
@@ -44,6 +46,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/RequestEditEmailDto'
+      tags:
+        - ClientController (Информация о пользователе)
       responses:
         '200':
           description: OK
@@ -60,6 +64,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/RequestEditMobilePhoneDto'
+      tags:
+        - ClientController (Информация о пользователе)
       responses:
         '200':
           description: OK
@@ -76,6 +82,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/NewAddressDto'
+      tags:
+        - ClientController (Информация о пользователе)
       responses:
         '200':
           description: OK
@@ -91,6 +99,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/DeleteAddressDto'
+      tags:
+        - ClientController (Информация о пользователе)
       responses:
         '200':
           description: Address deleted successfully
