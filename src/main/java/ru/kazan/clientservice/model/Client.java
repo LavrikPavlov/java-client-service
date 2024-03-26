@@ -54,7 +54,7 @@ public class Client {
     @JoinColumn(name = "passport_id", unique = true)
     private Passport passport;
 
-    @ManyToMany(cascade = CascadeType.REMOVE)
+    @ManyToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @JoinTable(
             name = "address_client",
             joinColumns = @JoinColumn(name = "client_uuid"),

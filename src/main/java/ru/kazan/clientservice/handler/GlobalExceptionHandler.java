@@ -24,7 +24,8 @@ import java.time.LocalDateTime;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final String REASON_OF_EXCEPTION = "An invalid request with error [ {} ] was rejected because: {}";
+    private static final String REASON_OF_EXCEPTION = "\033[1;97mAn invalid request with error \033[1;31m[ {} ]" +
+            " \033[1;97mwas rejected because\n {}";
 
     @ExceptionHandler
     public ResponseEntity<ExceptionResponse> catchApplicationException(ApplicationException e,

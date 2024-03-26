@@ -13,7 +13,7 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
 
     @Query("FROM Address a WHERE a.country = ?1 AND a.city = ?2 AND a.street = ?3" +
             " AND a.house = ?4 AND a.apartment = ?5")
-    Optional<Address> findLikeAddress(String contry, String city, String street,
+    Optional<Address> findLikeAddress(String country, String city, String street,
                                       Integer house, Integer apartment);
 
 }
