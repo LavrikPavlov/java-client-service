@@ -36,16 +36,12 @@ public class ClientService {
     }
 
     public ResponseShortInfoDtoImpl getShortInfoClient(String clientId){
-        log.info("Get short info about Client");
-
         return clientRepository.findById(UUID.fromString(clientId))
                 .map(clientMapper::toShortInfoDto)
                 .orElseThrow(() -> new ApplicationException(ExceptionEnum.BAD_REQUEST));
     }
 
     public ResponseFullInfoDtoImpl getFullInfoClient(String clientId){
-        log.info("Get full info about Client");
-
         return clientRepository.findById(UUID.fromString(clientId))
                 .map(clientMapper::toFullInfoDto)
                 .orElseThrow(() -> new ApplicationException(ExceptionEnum.BAD_REQUEST));
@@ -55,34 +51,28 @@ public class ClientService {
     public void changeEmail(RequestEditEmailDto dto){
         Client client = getClient(UUID.fromString(dto.getId()));
 
-        if(dto.getEmail().equals(client.getEmail())){
-            log.error("The email is identical to the data in the database");
+        if(dto.getEmail().equals(client.getEmail()))
             throw new ApplicationException(ExceptionEnum.CONFLICT);
-        }
 
         if(dto.getEmail().isEmpty())
             throw new ApplicationException(ExceptionEnum.BAD_REQUEST);
 
         client.setEmail(dto.getEmail());
         clientRepository.save(client);
-        log.info("Successful change client's email");
     }
 
     @Transactional
     public void changeMobilePhone(RequestEditMobilePhoneDto dto){
         Client client = getClient(UUID.fromString(dto.getId()));
 
-        if(dto.getMobilePhone().equals(client.getMobilePhone())) {
-            log.error("The phone number is identical to the data in the database");
+        if(dto.getMobilePhone().equals(client.getMobilePhone()))
             throw new ApplicationException(ExceptionEnum.CONFLICT);
-        }
 
         if(dto.getMobilePhone().isEmpty())
             throw new ApplicationException(ExceptionEnum.BAD_REQUEST);
 
         client.setMobilePhone(dto.getMobilePhone());
         clientRepository.save(client);
-        log.info("Successful change client's mobile phone");
     }
 
     @Transactional
