@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: load-data-from-csv-userprofile
+      author: Mikhail
+      changes:
+        - loadData:
+            columns:
+              - column:
+                  header: client_id
+                  name: client_id
+              - column:
+                  header: password
+                  name: password
+              - column:
+                  header: role
+                  name: role
+            tableName: UserProfile
+            schemaName: client_storage
+            quotchar: '"'
+            separator: ','
+            file: db/changelog/v.0.0.2_csv/userprofile.csv

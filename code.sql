@@ -80,3 +80,20 @@ SELECT * FROM Client;
 SELECT * FROM Passport;
 SELECT * FROM Address;
 SELECT * FROM Address_Client;
+
+
+CREATE TABLE UserProfile(
+                            client_id uuid primary key references client(id),
+                            password varchar(255) unique,
+                            role varchar(30)
+);
+
+
+SELECT * FROM UserProfile;
+
+INSERT INTO UserProfile(CLIENT_ID, PASSWORD, ROLE)
+VALUES
+    ('b3f62160-c084-41b1-8189-306d1906e2fb', null, 'Администратор'),
+    ('7e0729ed-dc53-4ff7-b710-0ba6ebb65578', null, 'Клиент'),
+    ('3932fb0d-b735-4018-9292-4b013b5de3ee', null, 'Клиент'),
+    ('0f81f262-2b1e-473a-bdd2-395e46747288', null, 'Клиент')

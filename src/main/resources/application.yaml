@@ -21,3 +21,10 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     url: /client-service-api.yaml
+
+client-service:
+  security:
+    jwt:
+      secret-key:
+      time-access: 1800000
+      time-refresh: 3600000
