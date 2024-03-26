@@ -54,8 +54,9 @@ public class ControllerLogAdvice {
         assert attributes != null;
         HttpServletRequest request = attributes.getRequest();
 
-        Map<String, String[]> params = request.getParameterMap();
-        List<String> body = makeBodyFromArgs(point.getArgs());
+        String params = paramsToString(request.getParameterMap());
+        String body = makeBodyFromArgs(point.getArgs());
+
         Object proceed = point.proceed();
 
         log.info("""
@@ -91,15 +92,23 @@ public class ControllerLogAdvice {
         return objectMapper.writeValueAsString(o);
     }
 
-    private List<String> makeBodyFromArgs(Object[] args){
+    private String makeBodyFromArgs(Object[] args){
         List<String> reponceList = new ArrayList<>();
 
         Arrays.stream(args)
                 .filter(Objects::nonNull)
+                .filter(arg -> !(arg instanceof String))
                 .forEach(object -> reponceList.add(makeBodyFromObject(object)));
 
-        return reponceList;
+        return reponceList.toString();
     }
 
+    private String paramsToString(Map<String, String[]> params) {
+        List<String> values = new ArrayList<>();
+        for (String[] array : params.values()) {
+            values.addAll(Arrays.asList(array));
+        }
+        return values.toString();
+    }
 
 }
