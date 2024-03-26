@@ -19,12 +19,12 @@ public class ServiceLogAdvice {
 
     @Before("serviceMethods()")
     public void logBefore(JoinPoint joinPoint){
-        log.debug("The execution of the service method {} has started", joinPoint.getSignature().getName());
+        log.debug("\033[1;97mThe execution of the service method \033[1;33m{} \033[1;97mhas started", joinPoint.getSignature().getName());
     }
 
     @After("serviceMethods()")
     public void logAfter(JoinPoint joinPoint){
-        log.debug("The execution of the service method {} has ended", joinPoint.getSignature().getName());
+        log.debug("\033[1;97mThe execution of the service method \033[1;33m{} \033[1;97mhas ended", joinPoint.getSignature().getName());
     }
 
 }
