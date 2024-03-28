@@ -4,15 +4,15 @@ databaseChangeLog:
       author: Mikhail
       changes:
         - createTable:
-            tableName: UserProfile
-            schemaName: client_storage
+            tableName: user_profile
+            schemaName: user_storage
             columns:
               - column:
                   name: client_id
                   type: UUID
                   constraints:
                     primaryKey: true
-                    foreignKeyName: userprofile_client_id_fkey
+                    foreignKeyName: user_profile_client_id_fkey
                     references: client_storage.client(id)
               - column:
                   name: password
@@ -22,5 +22,10 @@ databaseChangeLog:
               - column:
                   name: role
                   type: varchar(35)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_code
+                  type: char(6)
                   constraints:
                     nullable: false

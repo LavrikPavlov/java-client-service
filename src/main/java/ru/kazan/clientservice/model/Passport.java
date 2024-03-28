@@ -14,7 +14,7 @@ import ru.kazan.clientservice.utils.enums.GenderEnum;
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "passport")
+@Table(name = "passport", schema = "client_storage")
 public class Passport {
 
     @Id

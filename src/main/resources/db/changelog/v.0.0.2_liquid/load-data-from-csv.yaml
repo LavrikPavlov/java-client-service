@@ -14,8 +14,8 @@ databaseChangeLog:
               - column:
                   header: role
                   name: role
-            tableName: UserProfile
-            schemaName: client_storage
+            tableName: user_profile
+            schemaName: user_storage
             quotchar: '"'
             separator: ','
             file: db/changelog/v.0.0.2_csv/userprofile.csv

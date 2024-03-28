@@ -44,7 +44,7 @@ public class ClientService {
 
     @PreAuthorize("hasRole(T(ru.kazan.clientservice.utils.enums.RoleEnum).ADMIN)")
     public ResponseFullInfoDtoImpl getFullInfoClient(String clientId){
-        return clientRepository.findById(UUID.fromString(clientId))
+        return clientRepository.findFullInfoClientById(UUID.fromString(clientId))
                 .map(clientMapper::toFullInfoDto)
                 .orElseThrow(() -> new ApplicationException(ExceptionEnum.BAD_REQUEST));
     }

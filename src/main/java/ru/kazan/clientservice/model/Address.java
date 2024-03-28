@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "address")
+@Table(name = "address", schema = "client_storage")
 public class Address {
 
     @Id

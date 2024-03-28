@@ -21,5 +21,7 @@ public interface ClientRepository extends JpaRepository<Client, UUID> {
 
     List<Client> findClientByAddressContains(Address address);
 
+    @Query("FROM Client c WHERE c.email = ?1 OR c.mobilePhone = ?1")
+    Optional<Client> findClientByEmailOrMobilePhone(String contact);
 
 }

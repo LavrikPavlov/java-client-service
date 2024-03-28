@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 import ru.kazan.clientservice.utils.convector.RoleEnumConverter;
 import ru.kazan.clientservice.utils.enums.RoleEnum;
 
@@ -15,6 +16,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "user_profile", schema = "user_storage")
 public class UserProfile {
 
     @Id
@@ -31,5 +33,9 @@ public class UserProfile {
 
     @Convert(converter = RoleEnumConverter.class)
     private RoleEnum role;
+
+    @Column(name = "last_code")
+    @Length(min = 6, max = 6)
+    private String lastCode;
 
 }

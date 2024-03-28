@@ -8,10 +8,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import ru.kazan.clientservice.utils.filter.JwtFilter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
@@ -19,6 +25,13 @@ import ru.kazan.clientservice.utils.filter.JwtFilter;
 public class SecurityConfiguration {
 
     private final JwtFilter filter;
+
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        Map<String, PasswordEncoder> encoderMap = new HashMap<>();
+        encoderMap.put("bcrypt", new BCryptPasswordEncoder());
+        return new DelegatingPasswordEncoder("bcrypt", encoderMap);
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -33,7 +46,6 @@ public class SecurityConfiguration {
                         .requestMatchers("/client/edit/mobile-phone").authenticated()
                         .requestMatchers("/session/token").authenticated()
                         .requestMatchers("/session/password/change").authenticated()
-                        .requestMatchers("/session/password/new").authenticated()
                         .anyRequest().permitAll()
                 ).exceptionHandling(exc ->
                         exc.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))

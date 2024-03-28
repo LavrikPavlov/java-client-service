@@ -9,7 +9,8 @@ import lombok.Getter;
 public enum RoleEnum {
 
     ADMIN(0,"Администратор"),
-    CLIENT(1, "Клиент");
+    CLIENT(1, "Клиент"),
+    NOT_CLIENT(2, "Не потвержеднный");
 
     private final Integer id;
     private final String roleText;

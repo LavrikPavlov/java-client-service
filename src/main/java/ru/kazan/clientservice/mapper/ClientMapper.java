@@ -21,4 +21,5 @@ public interface ClientMapper {
     ResponseFullInfoDtoImpl toFullInfoDto (Client client);
 
 
+
 }

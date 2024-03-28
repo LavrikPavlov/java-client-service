@@ -28,3 +28,4 @@ client-service:
       secret-key:
       time-access: 1800000
       time-refresh: 3600000
+      time-session: 600000

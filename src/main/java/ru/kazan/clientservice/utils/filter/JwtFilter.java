@@ -13,7 +13,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import ru.kazan.clientservice.service.UserDetail;
-import ru.kazan.clientservice.utils.jwt.JwtProvider;
+import ru.kazan.clientservice.utils.enums.RoleEnum;
+import ru.kazan.clientservice.utils.security.JwtProvider;
 
 import java.io.IOException;
 
@@ -32,7 +33,7 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         String client = null;
-        String role = null;
+        RoleEnum role = null;
         String token = getTokenFromRequest(request);
         if (token != null && jwtProvider.validateToken(token)) {
             client = jwtProvider.getClientIdFromToken(token).toString();
@@ -46,8 +47,7 @@ public class JwtFilter extends OncePerRequestFilter {
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                     user,
                     null,
-                    user.getAuthorities()
-
+                    null
             );
 
             auth.setDetails(role);
@@ -59,7 +59,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private String getTokenFromRequest(HttpServletRequest request) {
         String bearer = request.getHeader(AUTHORIZATION);
-        if (bearer.startsWith("Bearer ")) {
+        if (bearer != null && bearer.startsWith("Bearer ")) {
             return bearer.substring(7);
         }
         return null;
