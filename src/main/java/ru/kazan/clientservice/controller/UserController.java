@@ -4,21 +4,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.kazan.clientservice.dto.jwt.JwtRequest;
 
 @RestController
-@RequestMapping("/registration")
-public class RegistrationController {
+@RequestMapping("/user")
+public class UserController {
 
-    @PostMapping
-    public ResponseEntity<Void> reg(){
+
+    @PostMapping("/auth")
+    public ResponseEntity<JwtRequest> auth(){
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping()
-    public ResponseEntity<Void> verify(){
+    @PostMapping("/reg")
+    public ResponseEntity<Void> registration(){
         return ResponseEntity.ok().build();
     }
-
 
 
 }

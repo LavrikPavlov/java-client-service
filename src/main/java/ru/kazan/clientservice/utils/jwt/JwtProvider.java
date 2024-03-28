@@ -47,6 +47,10 @@ public class JwtProvider {
         return UUID.fromString(extractClaim(token, Claims::getSubject));
     }
 
+    public String extractRoleFromToken(String token) {
+        return extractClaim(token, claims -> claims.get("role").toString());
+    }
+
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
