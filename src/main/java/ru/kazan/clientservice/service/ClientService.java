@@ -2,6 +2,7 @@ package ru.kazan.clientservice.service;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import ru.kazan.clientservice.dto.client.*;
 import ru.kazan.clientservice.exception.ApplicationException;
@@ -41,8 +42,9 @@ public class ClientService {
                 .orElseThrow(() -> new ApplicationException(ExceptionEnum.BAD_REQUEST));
     }
 
+    @PreAuthorize("hasRole(T(ru.kazan.clientservice.utils.enums.RoleEnum).ADMIN)")
     public ResponseFullInfoDtoImpl getFullInfoClient(String clientId){
-        return clientRepository.findById(UUID.fromString(clientId))
+        return clientRepository.findFullInfoClientById(UUID.fromString(clientId))
                 .map(clientMapper::toFullInfoDto)
                 .orElseThrow(() -> new ApplicationException(ExceptionEnum.BAD_REQUEST));
     }

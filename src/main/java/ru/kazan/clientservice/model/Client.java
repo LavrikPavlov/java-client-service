@@ -3,10 +3,7 @@ package ru.kazan.clientservice.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import ru.kazan.clientservice.utils.enums.ClientStatus;
 
 import java.util.Date;
@@ -18,7 +15,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Setter
 @Getter
-@Table(name = "client")
+@Builder
+@Table(name = "client", schema = "client_storage")
 public class Client {
 
     @Id
@@ -36,7 +34,6 @@ public class Client {
     private String patronymic;
 
     @Column(name = "mobile_phone")
-    @NotNull
     private String mobilePhone;
 
     @Email
@@ -54,7 +51,7 @@ public class Client {
     @JoinColumn(name = "passport_id", unique = true)
     private Passport passport;
 
-    @ManyToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.REMOVE)
     @JoinTable(
             name = "address_client",
             joinColumns = @JoinColumn(name = "client_uuid"),

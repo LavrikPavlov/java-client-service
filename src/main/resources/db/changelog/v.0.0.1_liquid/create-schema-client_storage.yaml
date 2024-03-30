@@ -5,3 +5,5 @@ databaseChangeLog:
       changes:
         - sql:
             sql: CREATE SCHEMA IF NOT EXISTS client_storage;
+        - sql:
+            sql: CREATE SCHEMA IF NOT EXISTS user_storage;

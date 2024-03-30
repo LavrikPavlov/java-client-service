@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-user-profile-table
+      author: Mikhail
+      changes:
+        - createTable:
+            tableName: user_profile
+            schemaName: user_storage
+            columns:
+              - column:
+                  name: client_id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    foreignKeyName: user_profile_client_id_fkey
+                    references: client_storage.client(id)
+              - column:
+                  name: password
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: role
+                  type: varchar(35)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_code
+                  type: char(6)
+                  constraints:
+                    nullable: false

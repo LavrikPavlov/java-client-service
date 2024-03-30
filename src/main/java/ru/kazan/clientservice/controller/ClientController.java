@@ -1,6 +1,6 @@
 package ru.kazan.clientservice.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.kazan.clientservice.dto.client.*;
@@ -9,15 +9,12 @@ import ru.kazan.clientservice.exception.ExceptionEnum;
 import ru.kazan.clientservice.service.ClientService;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/client")
 public class ClientController {
 
     private final ClientService clientService;
 
-    @Autowired
-    public ClientController(ClientService clientService) {
-        this.clientService = clientService;
-    }
 
     @GetMapping("/info")
     public ResponseEntity<ResponseInfoDto> getInfo(@RequestParam(required = false) String type,

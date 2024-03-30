@@ -19,6 +19,12 @@ public class ApplicationException extends RuntimeException{
         this.errorMessage = exceptionEnum.getErrorMessage();
     }
 
+    public ApplicationException(ExceptionEnum exceptionEnum, String errorMessage){
+        this.exceptionEnum = exceptionEnum;
+        this.httpStatus = exceptionEnum.getHttpStatus();
+        this.errorMessage = errorMessage;
+    }
+
     @Override
     public String getMessage() {
         return this.errorMessage;
