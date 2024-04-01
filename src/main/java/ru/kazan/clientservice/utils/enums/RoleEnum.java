@@ -20,4 +20,12 @@ public enum RoleEnum {
         return roleText;
     }
 
+    public static RoleEnum fromText(String text) {
+        for (RoleEnum role : RoleEnum.values()) {
+            if (role.roleText.equals(text)) {
+                return role;
+            }
+        }
+        throw new IllegalArgumentException("Unknown role: " + text);
+    }
 }

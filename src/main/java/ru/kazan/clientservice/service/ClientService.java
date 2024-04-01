@@ -1,8 +1,8 @@
 package ru.kazan.clientservice.service;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import ru.kazan.clientservice.dto.client.*;
 import ru.kazan.clientservice.exception.ApplicationException;
@@ -13,11 +13,13 @@ import ru.kazan.clientservice.model.Address;
 import ru.kazan.clientservice.model.Client;
 import ru.kazan.clientservice.repository.AddressRepository;
 import ru.kazan.clientservice.repository.ClientRepository;
+import ru.kazan.clientservice.utils.security.JwtProvider;
 
 import java.util.UUID;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ClientService {
 
     private final ClientRepository clientRepository;
@@ -28,30 +30,32 @@ public class ClientService {
 
     private final AddressMapper addressMapper;
 
-    public ClientService(ClientRepository clientRepository, AddressRepository addressRepository,
-                         ClientMapper clientMapper, AddressMapper addressMapper) {
-        this.clientRepository = clientRepository;
-        this.addressRepository = addressRepository;
-        this.clientMapper = clientMapper;
-        this.addressMapper = addressMapper;
-    }
+    private final JwtProvider jwtProvider;
 
-    public ResponseShortInfoDtoImpl getShortInfoClient(String clientId){
-        return clientRepository.findById(UUID.fromString(clientId))
+
+    public ResponseShortInfoDtoImpl getShortInfoClient(String token){
+        UUID clientId = getIdFromToken(token);
+
+        return clientRepository.findById(clientId)
                 .map(clientMapper::toShortInfoDto)
                 .orElseThrow(() -> new ApplicationException(ExceptionEnum.BAD_REQUEST));
     }
 
-    @PreAuthorize("hasRole(T(ru.kazan.clientservice.utils.enums.RoleEnum).ADMIN)")
-    public ResponseFullInfoDtoImpl getFullInfoClient(String clientId){
-        return clientRepository.findFullInfoClientById(UUID.fromString(clientId))
+    public ResponseFullInfoDtoImpl getFullInfoClient(String token){
+        UUID clientId = getIdFromToken(token);
+
+        return clientRepository.findFullInfoClientById(clientId)
                 .map(clientMapper::toFullInfoDto)
                 .orElseThrow(() -> new ApplicationException(ExceptionEnum.BAD_REQUEST));
     }
 
     @Transactional
-    public void changeEmail(RequestEditEmailDto dto){
-        Client client = getClient(UUID.fromString(dto.getId()));
+    public void changeEmail(RequestEditEmailDto dto, String token, String sessionToken){
+        if(validSessionToken(sessionToken))
+            throw new ApplicationException(ExceptionEnum.BAD_REQUEST, "Not valid session token");
+
+        UUID clientId = getIdFromToken(token);
+        Client client = getClient(clientId);
 
         if(dto.getEmail().equals(client.getEmail()))
             throw new ApplicationException(ExceptionEnum.CONFLICT);
@@ -64,8 +68,12 @@ public class ClientService {
     }
 
     @Transactional
-    public void changeMobilePhone(RequestEditMobilePhoneDto dto){
-        Client client = getClient(UUID.fromString(dto.getId()));
+    public void changeMobilePhone(RequestEditMobilePhoneDto dto, String token, String sessionToken){
+        if(validSessionToken(sessionToken))
+            throw new ApplicationException(ExceptionEnum.BAD_REQUEST, "Not valid session token");
+
+        UUID clientId = getIdFromToken(token);
+        Client client = getClient(clientId);
 
         if(dto.getMobilePhone().equals(client.getMobilePhone()))
             throw new ApplicationException(ExceptionEnum.CONFLICT);
@@ -78,8 +86,9 @@ public class ClientService {
     }
 
     @Transactional
-    public void addNewAddress(NewAddressDto dto){
-        Client client = getClient(UUID.fromString(dto.getId()));
+    public void addNewAddress(NewAddressDto dto, String token){
+        UUID clientId = getIdFromToken(token);
+        Client client = getClient(clientId);
 
         Address address = addressMapper.toAddress(dto);
 
@@ -97,11 +106,13 @@ public class ClientService {
     }
 
     @Transactional
-    public void deleteAddress(DeleteAddressDto dto){
+    public void deleteAddress(DeleteAddressDto dto, String token){
+        UUID clientId = getIdFromToken(token);
+
         Address address = addressRepository.findById(dto.getAddressId())
                 .orElseThrow(() -> new ApplicationException(ExceptionEnum.BAD_REQUEST));
 
-        Client client = getClient(UUID.fromString(dto.getId()));
+        Client client = getClient(clientId);
 
         if(!checkClientHaveAddress(address, client))
             throw new ApplicationException(ExceptionEnum.BAD_REQUEST);
@@ -113,6 +124,10 @@ public class ClientService {
 
         client.getAddress().remove(address);
         clientRepository.save(client);
+    }
+
+    private boolean validSessionToken(String token){
+        return !jwtProvider.validateToken(token);
     }
 
     private boolean checkCountClientWithAddress(Address address){
@@ -129,6 +144,13 @@ public class ClientService {
     private Client getClient(UUID id){
         return clientRepository.findById(id)
                 .orElseThrow(() -> new ApplicationException(ExceptionEnum.BAD_REQUEST));
+    }
+
+    private UUID getIdFromToken(String token){
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        return jwtProvider.getClientIdFromToken(token);
     }
 
 }

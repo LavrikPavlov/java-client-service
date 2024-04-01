@@ -1,7 +1,10 @@
 package ru.kazan.clientservice.utils.security;
 
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +37,6 @@ public class JwtProvider {
     @Value("${client-service.security.jwt.time-refresh}")
     private long jwtTimeRefresh;
 
-
     public String genAccessToken(UserProfile user){
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", user.getRole());
@@ -56,7 +58,9 @@ public class JwtProvider {
     }
 
     public RoleEnum extractRoleFromToken(String token) {
-        return (RoleEnum) extractClaim(token, claims -> claims.get("role"));
+        String role = extractClaim(token, claims -> claims.get("role")).toString();
+        log.info("Get Client role from token {}", role);
+        return RoleEnum.fromText(role);
     }
 
     public boolean validateToken(String token) {

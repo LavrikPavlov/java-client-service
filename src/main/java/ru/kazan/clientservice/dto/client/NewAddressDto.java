@@ -11,9 +11,6 @@ import lombok.*;
 @Builder
 public class NewAddressDto {
 
-    @JsonProperty(value = "clientId")
-    private String id;
-
     @JsonProperty(value = "country", required = true)
     private String country;
 

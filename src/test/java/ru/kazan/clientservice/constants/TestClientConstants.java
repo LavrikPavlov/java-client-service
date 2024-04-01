@@ -6,8 +6,10 @@ import ru.kazan.clientservice.dto.client.ResponseShortInfoDtoImpl;
 import ru.kazan.clientservice.model.Address;
 import ru.kazan.clientservice.model.Client;
 import ru.kazan.clientservice.model.Passport;
+import ru.kazan.clientservice.model.UserProfile;
 import ru.kazan.clientservice.utils.enums.ClientStatus;
 import ru.kazan.clientservice.utils.enums.GenderEnum;
+import ru.kazan.clientservice.utils.enums.RoleEnum;
 
 import java.util.Collections;
 import java.util.Date;
@@ -23,13 +25,13 @@ public class TestClientConstants {
 
     public static final String CLIENT_ID_CORRECT = "7e0729ed-dc53-4ff7-b710-0ba6ebb65578";
 
-    public static final String CLIENT_ID_NOT_CORRECT = "7e07529ed-dc53-4A7-b710-0ba6ebb25578";
 
     /**
      * ENTITY
      * @Client
      * @Address
      * @Passport
+     * @UserProfile
      */
 
     public static final Passport PASSPORT_DEFAULT = new Passport(
@@ -62,13 +64,20 @@ public class TestClientConstants {
             new HashSet<>(Collections.singleton(ADDRESS_DEFAULT))
     );
 
+    public static final UserProfile USER_PROFILE_DEFAULT = new UserProfile(
+            UUID.fromString(CLIENT_ID_CORRECT),
+            CLIENT_DEFAULT,
+            null,
+            RoleEnum.CLIENT,
+            "000000"
+    );
+
     /**
      * RESPONSE DTO FOR ANSWER
      */
 
     public static final ResponseFullInfoDtoImpl RESPONSE_FULL_INFO_DTO =
             ResponseFullInfoDtoImpl.builder()
-                    .id(UUID.fromString("7e0729ed-dc53-4ff7-b710-0ba6ebb65578"))
                     .firstName("Алиса")
                     .lastName("Акопова")
                     .patronymic("Владимировна")
@@ -98,7 +107,6 @@ public class TestClientConstants {
 
     public static final ResponseShortInfoDtoImpl RESPONSE_SHORT_INFO_DTO =
             ResponseShortInfoDtoImpl.builder()
-                    .id(UUID.fromString("7e0729ed-dc53-4ff7-b710-0ba6ebb65578"))
                     .firstName("Алиса")
                     .lastName("Акопова")
                     .patronymic("Владимировна")

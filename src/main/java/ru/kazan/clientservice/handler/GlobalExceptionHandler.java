@@ -10,6 +10,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -36,7 +37,7 @@ public class GlobalExceptionHandler {
                 request.getRequestURI(),
                 exceptionEnum.getHttpStatus().value(),
                 exceptionEnum.getHttpStatus().getReasonPhrase(),
-                exceptionEnum.getErrorMessage(),
+                e.getErrorMessage(),
                 LocalDateTime.now()
         );
 
@@ -66,7 +67,8 @@ public class GlobalExceptionHandler {
             IllegalArgumentException.class,
             TransactionSystemException.class,
             InvalidDataAccessApiUsageException.class,
-            NullPointerException.class
+            NullPointerException.class,
+            MissingRequestHeaderException.class
     })
     public ResponseEntity<ExceptionResponse> catchMethodArgumentTypeMismatchException(HttpServletRequest request) {
         ExceptionEnum exceptionMessage = ExceptionEnum.BAD_REQUEST;

@@ -40,7 +40,7 @@ public class SessionService {
     @Transactional
     public void verifyCode(TypeCodeSendDto dto) {
         Client client = getClientContact(dto.getContact());
-        updateOrCreateUserProfile(client);
+        updateUserProfile(client);
     }
 
     public JwtSessionToken getSessionToken(CodeDto dto){
@@ -57,7 +57,9 @@ public class SessionService {
 
     @Transactional
     public void setNewPasswordClient(NewPasswordDto dto, String sessionToken){
-        jwtProvider.validateToken(sessionToken);
+        if(!jwtProvider.validateToken(sessionToken))
+            throw new ApplicationException(ExceptionEnum.BAD_REQUEST, "Not valid session token");
+
         UUID clientId = jwtProvider.getClientIdFromToken(sessionToken);
         UserProfile user = getUserByClientId(clientId);
         setPasswordWithEncoder(user, dto.getNewPassword());
@@ -70,20 +72,22 @@ public class SessionService {
         userProfileRepository.save(user);
     }
 
-    private void updateOrCreateUserProfile(Client client) {
+    private void updateUserProfile(Client client) {
         String code = genNewCode();
 
         UserProfile user = userProfileRepository.findByClientId(client.getId())
-                        .orElse(new UserProfile(
-                                client.getId(),
-                                client,
-                                null,
-                                RoleEnum.NOT_CLIENT,
-                                null
-                        ));
+                .orElseGet(() -> createUserProfile(client));
 
         user.setLastCode(code);
         userProfileRepository.save(user);
+    }
+
+    private UserProfile createUserProfile(Client client){
+        return UserProfile.builder()
+                .client(client)
+                .role(RoleEnum.NOT_CLIENT)
+                .lastCode("000000")
+                .build();
     }
 
     private UserProfile getUserByClientId(UUID clientId){

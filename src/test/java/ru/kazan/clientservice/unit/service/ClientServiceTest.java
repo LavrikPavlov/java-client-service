@@ -18,6 +18,7 @@ import ru.kazan.clientservice.model.Client;
 import ru.kazan.clientservice.repository.AddressRepository;
 import ru.kazan.clientservice.repository.ClientRepository;
 import ru.kazan.clientservice.service.ClientService;
+import ru.kazan.clientservice.utils.security.JwtProvider;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -42,20 +43,27 @@ class ClientServiceTest {
     @Mock
     private AddressMapper addressMapper;
 
-    private String clientId;
+    @Mock
+    private JwtProvider jwtProvider;
 
+    private UUID clientId;
+    private UUID notCorrectId;
+    private String accessToken;
+    private String sessionToken;
     private Client client;
-
     private Address address;
 
-    private String notCorrectId;
 
     @BeforeEach
     void setUp(){
-        clientId = TestClientConstants.CLIENT_ID_CORRECT;
+        clientId = UUID.fromString(TestClientConstants.CLIENT_ID_CORRECT);
         client = TestClientConstants.CLIENT_DEFAULT;
         address = TestClientConstants.ADDRESS_DEFAULT;
-        notCorrectId = UUID.randomUUID().toString();
+        notCorrectId = UUID.randomUUID();
+        accessToken = "Bearer token";
+        sessionToken = "Token";
+
+
     }
 
     @Test
@@ -64,14 +72,15 @@ class ClientServiceTest {
         ResponseShortInfoDtoImpl responseShortInfoDto
                 = TestClientConstants.RESPONSE_SHORT_INFO_DTO;
 
-        when(clientRepository.findById(UUID.fromString(clientId)))
+        when(jwtProvider.getClientIdFromToken("token"))
+                .thenReturn(clientId);
+        when(clientRepository.findById(clientId))
                 .thenReturn(Optional.of(client));
         when(clientMapper.toShortInfoDto(any(Client.class)))
                 .thenReturn(responseShortInfoDto);
 
-        ResponseShortInfoDtoImpl response = clientService.getShortInfoClient(clientId);
+        ResponseShortInfoDtoImpl response = clientService.getShortInfoClient(accessToken);
 
-        assertEquals(response.getId(), responseShortInfoDto.getId());
         assertEquals(response.getFirstName(), responseShortInfoDto.getFirstName());
         assertEquals(response.getLastName(), responseShortInfoDto.getLastName());
         assertEquals(response.getPatronymic(), responseShortInfoDto.getPatronymic());
@@ -87,10 +96,13 @@ class ClientServiceTest {
     void getShortInfoClient_NotExistClient_ReturnException() {
         ExceptionEnum exceptionEnum = ExceptionEnum.BAD_REQUEST;
 
+        when(jwtProvider.getClientIdFromToken("token"))
+                .thenReturn(clientId);
+
         when(clientRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
         ApplicationException exception = assertThrows(ApplicationException.class, () -> clientService
-                .getShortInfoClient(notCorrectId));
+                .getShortInfoClient(accessToken));
 
         assertEquals(exception.getExceptionEnum(), exceptionEnum);
     }
@@ -101,15 +113,17 @@ class ClientServiceTest {
         ResponseFullInfoDtoImpl responseFullInfoDto
                 = TestClientConstants.RESPONSE_FULL_INFO_DTO;
 
-        when(clientRepository.findById(UUID.fromString(clientId)))
+        when(jwtProvider.getClientIdFromToken("token"))
+                .thenReturn(clientId);
+
+        when(clientRepository.findFullInfoClientById(clientId))
                 .thenReturn(Optional.of(client));
-        when(clientMapper.toFullInfoDto(any(Client.class)))
+        when(clientMapper.toFullInfoDto(client))
                 .thenReturn(responseFullInfoDto);
 
         ResponseFullInfoDtoImpl response
-                = clientService.getFullInfoClient(clientId);
+                = clientService.getFullInfoClient(accessToken);
 
-        assertEquals(responseFullInfoDto.getId(), response.getId());
         assertEquals(responseFullInfoDto.getFirstName(), response.getFirstName());
         assertEquals(responseFullInfoDto.getLastName(), response.getLastName());
         assertEquals(responseFullInfoDto.getPatronymic(), response.getPatronymic());
@@ -127,12 +141,18 @@ class ClientServiceTest {
     void getFullInfoClient_NotExistClient_ReturnException() {
         ExceptionEnum exceptionEnum = ExceptionEnum.BAD_REQUEST;
 
-        when(clientRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+        when(jwtProvider.getClientIdFromToken("token"))
+                .thenReturn(notCorrectId);
 
-        ApplicationException exception = assertThrows(ApplicationException.class, () -> clientService
-                .getFullInfoClient(notCorrectId));
+        when(clientRepository.findFullInfoClientById(notCorrectId)).thenReturn(Optional.empty());
+
+        ApplicationException exception = assertThrows(ApplicationException.class,
+                () -> clientService.getFullInfoClient(accessToken));
 
         assertEquals(exception.getExceptionEnum(), exceptionEnum);
+
+        verify(jwtProvider, times(1)).getClientIdFromToken("token");
+        verify(clientRepository, times(1)).findFullInfoClientById(notCorrectId);
     }
 
     @Test
@@ -140,16 +160,21 @@ class ClientServiceTest {
     void changeEmail_withCorrectDto() {
         String newEmail = "test@new.ru";
         RequestEditEmailDto request = RequestEditEmailDto.builder()
-                .id(clientId)
                 .email(newEmail)
                 .build();
+        when(jwtProvider.validateToken(sessionToken)).thenReturn(true);
 
-        when(clientRepository.findById(UUID.fromString(clientId))).thenReturn(Optional.of(client));
+        when(jwtProvider.getClientIdFromToken("token"))
+                .thenReturn(clientId);
 
-        clientService.changeEmail(request);
+        when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
+
+        clientService.changeEmail(request, accessToken, sessionToken);
 
         assertEquals(newEmail, client.getEmail());
         verify(clientRepository, times(1)).save(client);
+        verify(jwtProvider, times(1)).validateToken(sessionToken);
+        verify(jwtProvider, times(1)).getClientIdFromToken("token");
     }
 
     @Test
@@ -157,14 +182,18 @@ class ClientServiceTest {
     void changeEmail_withNotCorrectDto_ReturnException() {
         ExceptionEnum exceptionEnum = ExceptionEnum.BAD_REQUEST;
         RequestEditEmailDto request = RequestEditEmailDto.builder()
-                .id(clientId)
                 .email("")
                 .build();
+
+        when(jwtProvider.validateToken(sessionToken)).thenReturn(true);
+
+        when(jwtProvider.getClientIdFromToken("token"))
+                .thenReturn(clientId);
 
         when(clientRepository.findById(any(UUID.class))).thenReturn(Optional.of(client));
 
         ApplicationException exception = assertThrows(ApplicationException.class,
-                () -> clientService.changeEmail(request));
+                () -> clientService.changeEmail(request, accessToken, sessionToken));
 
         assertEquals(exception.getExceptionEnum(), exceptionEnum);
     }
@@ -175,20 +204,24 @@ class ClientServiceTest {
                 String newEmail = "test@test.ru";
 
         client = new Client();
-        client.setId(UUID.fromString(clientId));
+        client.setId(clientId);
         client.setEmail(newEmail);
 
         ExceptionEnum exceptionEnum = ExceptionEnum.CONFLICT;
 
         RequestEditEmailDto request = RequestEditEmailDto.builder()
-                .id(clientId)
                 .email(newEmail)
                 .build();
 
-        when(clientRepository.findById(UUID.fromString(clientId))).thenReturn(Optional.of(client));
+        when(jwtProvider.validateToken(sessionToken)).thenReturn(true);
+
+        when(jwtProvider.getClientIdFromToken("token"))
+                .thenReturn(clientId);
+
+        when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
 
         ApplicationException exception = assertThrows(ApplicationException.class,
-                () -> clientService.changeEmail(request));
+                () -> clientService.changeEmail(request, accessToken, sessionToken));
 
         assertEquals(newEmail, client.getEmail());
         assertEquals(exception.getExceptionEnum(), exceptionEnum);
@@ -199,16 +232,22 @@ class ClientServiceTest {
     void changeMobilePhone_withCorrectDto() {
         String newMobilePhone = "89998887766";
         RequestEditMobilePhoneDto request = RequestEditMobilePhoneDto.builder()
-                .id(clientId)
                 .mobilePhone(newMobilePhone)
                 .build();
 
-        when(clientRepository.findById(UUID.fromString(clientId))).thenReturn(Optional.of(client));
+        when(jwtProvider.validateToken(sessionToken)).thenReturn(true);
 
-        clientService.changeMobilePhone(request);
+        when(jwtProvider.getClientIdFromToken("token"))
+                .thenReturn(clientId);
+
+        when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
+
+        clientService.changeMobilePhone(request, accessToken, sessionToken);
 
         assertEquals(newMobilePhone, client.getMobilePhone());
         verify(clientRepository, times(1)).save(client);
+        verify(jwtProvider, times(1)).validateToken(sessionToken);
+        verify(jwtProvider, times(1)).getClientIdFromToken("token");
     }
 
     @Test
@@ -217,20 +256,24 @@ class ClientServiceTest {
         String newMobilePhone = client.getMobilePhone();
 
         client = new Client();
-        client.setId(UUID.fromString(clientId));
+        client.setId(clientId);
         client.setMobilePhone(newMobilePhone);
 
         ExceptionEnum exceptionEnum = ExceptionEnum.CONFLICT;
 
         RequestEditMobilePhoneDto request = RequestEditMobilePhoneDto.builder()
-                .id(clientId)
                 .mobilePhone(newMobilePhone)
                 .build();
 
-        when(clientRepository.findById(UUID.fromString(clientId))).thenReturn(Optional.of(client));
+        when(jwtProvider.validateToken(sessionToken)).thenReturn(true);
+
+        when(jwtProvider.getClientIdFromToken("token"))
+                .thenReturn(clientId);
+
+        when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
 
         ApplicationException exception = assertThrows(ApplicationException.class,
-                () -> clientService.changeMobilePhone(request));
+                () -> clientService.changeMobilePhone(request, accessToken, sessionToken));
 
         assertEquals(newMobilePhone, client.getMobilePhone());
         assertEquals(exception.getExceptionEnum(), exceptionEnum);
@@ -242,14 +285,18 @@ class ClientServiceTest {
         ExceptionEnum exceptionEnum = ExceptionEnum.BAD_REQUEST;
 
         RequestEditMobilePhoneDto request = RequestEditMobilePhoneDto.builder()
-                .id(clientId)
                 .mobilePhone("")
                 .build();
+
+        when(jwtProvider.validateToken(sessionToken)).thenReturn(true);
+
+        when(jwtProvider.getClientIdFromToken("token"))
+                .thenReturn(clientId);
 
         when(clientRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
         ApplicationException exception = assertThrows(ApplicationException.class,
-                () -> clientService.changeMobilePhone(request));
+                () -> clientService.changeMobilePhone(request, accessToken, sessionToken));
 
         assertEquals(exception.getExceptionEnum(), exceptionEnum);
     }
@@ -258,15 +305,15 @@ class ClientServiceTest {
     @DisplayName("ClientService Unit: Add new Address with correct DTO and duplicate exist address")
     void addNewAddress_withCorrectDto() {
         NewAddressDto dto = new NewAddressDto();
-        dto.setId(clientId);
         dto.setCountry(address.getCountry());
         dto.setCity(address.getCity());
         dto.setStreet(address.getStreet());
         dto.setHouse(address.getHouse());
         dto.setHouse(address.getApartment());
 
-
-        when(clientRepository.findById(UUID.fromString(clientId))).thenReturn(Optional.of(client));
+        when(jwtProvider.getClientIdFromToken("token"))
+                .thenReturn(clientId);
+        when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
         when(addressMapper.toAddress(dto)).thenReturn(address);
 
         when(addressRepository.findLikeAddress(
@@ -277,17 +324,17 @@ class ClientServiceTest {
                 address.getApartment()))
                 .thenReturn(Optional.of(address));
 
-        clientService.addNewAddress(dto);
+        clientService.addNewAddress(dto, accessToken);
 
         assertTrue(client.getAddress().contains(address));
         verify(clientRepository, times(1)).save(client);
+        verify(jwtProvider, times(1)).getClientIdFromToken("token");
     }
 
     @Test
     @DisplayName("ClientService Unit: Add new Address with correct DTO and dont duplicate exist address")
     void addNewAddress_withAddressExists_SaveAddressClient(){
         NewAddressDto dto = new NewAddressDto();
-        dto.setId(clientId);
         dto.setCountry(address.getCountry());
         dto.setCity(address.getCity());
         dto.setStreet(address.getStreet());
@@ -295,7 +342,9 @@ class ClientServiceTest {
         dto.setHouse(address.getApartment());
 
 
-        when(clientRepository.findById(UUID.fromString(clientId))).thenReturn(Optional.of(client));
+        when(jwtProvider.getClientIdFromToken("token"))
+                .thenReturn(clientId);
+        when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
         when(addressMapper.toAddress(dto)).thenReturn(address);
 
         when(addressRepository.findLikeAddress(
@@ -308,9 +357,10 @@ class ClientServiceTest {
 
         when(addressRepository.save(address)).thenReturn(address);
 
-        clientService.addNewAddress(dto);
+        clientService.addNewAddress(dto, accessToken);
 
         assertTrue(client.getAddress().contains(address));
+        verify(jwtProvider, times(1)).getClientIdFromToken("token");
         verify(clientRepository, times(1)).save(client);
         verify(addressRepository, times(1)).save(address);
     }
@@ -321,13 +371,15 @@ class ClientServiceTest {
         ExceptionEnum exceptionEnum = ExceptionEnum.BAD_REQUEST;
 
         NewAddressDto dto = new NewAddressDto();
-        dto.setId(clientId);
 
-        when(clientRepository.findById(UUID.fromString(dto.getId())))
+        when(jwtProvider.getClientIdFromToken("token"))
+                .thenReturn(clientId);
+
+        when(clientRepository.findById(clientId))
                 .thenReturn(Optional.empty());
 
         ApplicationException exception = assertThrows(ApplicationException.class,
-                () -> clientService.addNewAddress(dto));
+                () -> clientService.addNewAddress(dto, accessToken));
 
         assertEquals(exception.getExceptionEnum(), exceptionEnum);
     }
@@ -340,21 +392,24 @@ class ClientServiceTest {
         Address deleteAddress = TestClientConstants.ADDRESS_DEFAULT;
         DeleteAddressDto dto = DeleteAddressDto.builder()
                 .addressId(deleteAddress.getId())
-                .id(clientId)
                 .build();
+
+        when(jwtProvider.getClientIdFromToken("token"))
+                .thenReturn(clientId);
 
         when(addressRepository.findById(deleteAddress.getId()))
                 .thenReturn(Optional.of(address));
 
-        when(clientRepository.findById(UUID.fromString(clientId)))
+        when(clientRepository.findById(clientId))
                 .thenReturn(Optional.of(client));
 
         when(clientRepository.findClientByAddressContains(address))
                 .thenReturn(Collections.singletonList(client));
 
-        clientService.deleteAddress(dto);
+        clientService.deleteAddress(dto, accessToken);
 
         assertFalse(client.getAddress().contains(address));
+        verify(jwtProvider, times(1)).getClientIdFromToken("token");
         verify(addressRepository, times(1)).delete(address);
         verify(clientRepository, times(1)).save(client);
     }
@@ -372,22 +427,25 @@ class ClientServiceTest {
 
         DeleteAddressDto dto = DeleteAddressDto.builder()
                 .addressId(deleteAddress.getId())
-                .id(clientId)
                 .build();
+
+        when(jwtProvider.getClientIdFromToken("token"))
+                .thenReturn(clientId);
 
         when(addressRepository.findById(deleteAddress.getId()))
                 .thenReturn(Optional.of(address));
 
-        when(clientRepository.findById(UUID.fromString(clientId)))
+        when(clientRepository.findById(clientId))
                 .thenReturn(Optional.of(client));
 
         when(clientRepository.findClientByAddressContains(address))
                 .thenReturn(Arrays.asList(client, newClient));
 
-        clientService.deleteAddress(dto);
+        clientService.deleteAddress(dto, accessToken);
 
         assertFalse(client.getAddress().contains(address));
 
+        verify(jwtProvider, times(1)).getClientIdFromToken("token");
         verify(addressRepository, times(0)).delete(address);
         verify(clientRepository, times(1)).save(client);
     }
@@ -400,14 +458,13 @@ class ClientServiceTest {
         Address deleteAddress = TestClientConstants.ADDRESS_DEFAULT;
         DeleteAddressDto dto = DeleteAddressDto.builder()
                 .addressId(deleteAddress.getId())
-                .id(clientId)
                 .build();
 
         when(addressRepository.findById(deleteAddress.getId()))
                 .thenReturn(Optional.empty());
 
         ApplicationException exception = assertThrows(ApplicationException.class,
-                () -> clientService.deleteAddress(dto));
+                () -> clientService.deleteAddress(dto, accessToken));
 
         assertEquals(exception.getExceptionEnum(), exceptionEnum);
     }
@@ -420,17 +477,19 @@ class ClientServiceTest {
         Address deleteAddress = TestClientConstants.ADDRESS_DEFAULT;
         DeleteAddressDto dto = DeleteAddressDto.builder()
                 .addressId(deleteAddress.getId())
-                .id(clientId)
                 .build();
+
+        when(jwtProvider.getClientIdFromToken("token"))
+                .thenReturn(clientId);
 
         when(addressRepository.findById(deleteAddress.getId()))
                 .thenReturn(Optional.of(address));
 
-        when(clientRepository.findById(UUID.fromString(clientId)))
+        when(clientRepository.findById(clientId))
                 .thenReturn(Optional.empty());
 
         ApplicationException exception = assertThrows(ApplicationException.class,
-                () -> clientService.deleteAddress(dto));
+                () -> clientService.deleteAddress(dto, accessToken));
 
         assertEquals(exception.getExceptionEnum(), exceptionEnum);
     }
@@ -445,17 +504,19 @@ class ClientServiceTest {
 
         DeleteAddressDto dto = DeleteAddressDto.builder()
                 .addressId(deleteAddress.getId())
-                .id(clientId)
                 .build();
+
+        when(jwtProvider.getClientIdFromToken("token"))
+                .thenReturn(clientId);
 
         when(addressRepository.findById(deleteAddress.getId()))
                 .thenReturn(Optional.of(address));
 
-        when(clientRepository.findById(UUID.fromString(clientId)))
+        when(clientRepository.findById(clientId))
                 .thenReturn(Optional.of(client));
 
         ApplicationException exception = assertThrows(ApplicationException.class,
-                () -> clientService.deleteAddress(dto));
+                () -> clientService.deleteAddress(dto, accessToken));
 
         assertEquals(exception.getExceptionEnum(), exceptionEnum);
     }

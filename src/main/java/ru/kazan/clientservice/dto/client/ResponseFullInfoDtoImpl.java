@@ -7,7 +7,6 @@ import ru.kazan.clientservice.model.Passport;
 import ru.kazan.clientservice.utils.enums.ClientStatus;
 
 import java.util.Set;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -15,9 +14,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class ResponseFullInfoDtoImpl implements ResponseInfoDto {
-
-    @JsonProperty(value = "id")
-    UUID id;
 
     @JsonProperty(value = "first_name")
     String firstName;
