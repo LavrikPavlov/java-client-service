@@ -28,7 +28,6 @@ class ClientControllerIT extends AbstractIntegrationTest {
     @BeforeEach
     void setUpClientController(){
         accessToken = "Bearer " + accessToken;
-        sessionToken = "Bearer " + sessionToken;
     }
 
     @Test
@@ -115,7 +114,7 @@ class ClientControllerIT extends AbstractIntegrationTest {
                 .accept(ContentType.JSON)
                 .body(request)
                 .header("Authorization", accessToken)
-                .header("Session", sessionToken)
+                .header("Session", sessionTokenEmail)
                 .when()
                 .patch("/client/edit/email")
                 .then()
@@ -138,7 +137,7 @@ class ClientControllerIT extends AbstractIntegrationTest {
                 .accept(ContentType.JSON)
                 .body(request)
                 .header("Authorization", accessToken)
-                .header("Session", sessionToken)
+                .header("Session", sessionTokenEmail)
                 .when()
                 .patch("/client/edit/email")
                 .then()
@@ -159,7 +158,7 @@ class ClientControllerIT extends AbstractIntegrationTest {
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .body(request)
-                .header("Session", sessionToken)
+                .header("Session", sessionTokenEmail)
                 .when()
                 .patch("/client/edit/email")
                 .then()
@@ -194,7 +193,7 @@ class ClientControllerIT extends AbstractIntegrationTest {
                 .accept(ContentType.JSON)
                 .body(request)
                 .header("Authorization", accessToken)
-                .header("Session", sessionToken)
+                .header("Session", sessionTokenEmail)
                 .when()
                 .patch("/client/edit/email")
                 .then()
@@ -213,7 +212,7 @@ class ClientControllerIT extends AbstractIntegrationTest {
                 .accept(ContentType.JSON)
                 .body(request)
                 .header("Authorization", accessToken)
-                .header("Session", sessionToken)
+                .header("Session", sessionTokenMobile)
                 .when()
                 .patch("/client/edit/mobile-phone")
                 .then()
@@ -236,7 +235,7 @@ class ClientControllerIT extends AbstractIntegrationTest {
                 .accept(ContentType.JSON)
                 .body(request)
                 .header("Authorization", accessToken)
-                .header("Session", sessionToken)
+                .header("Session", sessionTokenMobile)
                 .when()
                 .patch("/client/edit/mobile-phone")
                 .then()
@@ -256,7 +255,7 @@ class ClientControllerIT extends AbstractIntegrationTest {
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .body(request)
-                .header("Session", sessionToken)
+                .header("Session", sessionTokenMobile)
                 .when()
                 .patch("/client/edit/mobile-phone")
                 .then()
@@ -274,7 +273,7 @@ class ClientControllerIT extends AbstractIntegrationTest {
                 .accept(ContentType.JSON)
                 .body(request)
                 .header("Authorization", accessToken)
-                .header("Session", sessionToken)
+                .header("Session", sessionTokenMobile)
                 .when()
                 .patch("/client/edit/mobile-phone")
                 .then()

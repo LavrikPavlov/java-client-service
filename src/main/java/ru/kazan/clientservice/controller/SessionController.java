@@ -33,12 +33,12 @@ public class SessionController {
 
     @PostMapping("/verify/email")
     public ResponseEntity<JwtSessionToken> verifyEmail(@RequestBody @Valid EmailWithCodeDtoImpl dto){
-        return ResponseEntity.ok().body(sessionService.getSessionToken(dto));
+        return ResponseEntity.ok().body(sessionService.getSessionToken(dto, "email"));
     }
 
-    @PostMapping("/verify/phone")
+    @PostMapping("/verify/mobile")
     public ResponseEntity<JwtSessionToken> verifyMobilePhone(@RequestBody @Valid MobilePhoneCodeDtoImpl dto){
-        return ResponseEntity.ok().body(sessionService.getSessionToken(dto));
+        return ResponseEntity.ok().body(sessionService.getSessionToken(dto, "mobile"));
     }
 
     @PatchMapping("/password/new")

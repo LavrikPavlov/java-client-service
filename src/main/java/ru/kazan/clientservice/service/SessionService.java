@@ -43,14 +43,14 @@ public class SessionService {
         updateUserProfile(client);
     }
 
-    public JwtSessionToken getSessionToken(CodeDto dto){
+    public JwtSessionToken getSessionToken(CodeDto dto, String contact){
         UUID clientId = getClientContact(dto.getContact()).getId();
 
         UserProfile user = userProfileRepository.findByClientId(clientId)
                 .orElseThrow(() -> new ApplicationException(ExceptionEnum.BAD_REQUEST));
 
         if(user.getLastCode().equals(dto.getVerifyCode()))
-            return new JwtSessionToken(jwtProvider.genSessionToken(user));
+            return new JwtSessionToken(jwtProvider.genSessionToken(user, contact));
         else
             throw new ApplicationException(ExceptionEnum.BAD_REQUEST);
     }

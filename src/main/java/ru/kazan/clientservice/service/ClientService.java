@@ -51,11 +51,11 @@ public class ClientService {
 
     @Transactional
     public void changeEmail(RequestEditEmailDto dto, String token, String sessionToken){
-        if(validSessionToken(sessionToken))
-            throw new ApplicationException(ExceptionEnum.BAD_REQUEST, "Not valid session token");
-
         UUID clientId = getIdFromToken(token);
         Client client = getClient(clientId);
+
+        if(validateSessionToken(sessionToken, "email"))
+            throw new ApplicationException(ExceptionEnum.UNAUTHORIZED, "Not valid session token");
 
         if(dto.getEmail().equals(client.getEmail()))
             throw new ApplicationException(ExceptionEnum.CONFLICT);
@@ -69,11 +69,12 @@ public class ClientService {
 
     @Transactional
     public void changeMobilePhone(RequestEditMobilePhoneDto dto, String token, String sessionToken){
-        if(validSessionToken(sessionToken))
-            throw new ApplicationException(ExceptionEnum.BAD_REQUEST, "Not valid session token");
 
         UUID clientId = getIdFromToken(token);
         Client client = getClient(clientId);
+
+        if(validateSessionToken(sessionToken, "mobile"))
+            throw new ApplicationException(ExceptionEnum.UNAUTHORIZED, "Not valid session token");
 
         if(dto.getMobilePhone().equals(client.getMobilePhone()))
             throw new ApplicationException(ExceptionEnum.CONFLICT);
@@ -126,8 +127,9 @@ public class ClientService {
         clientRepository.save(client);
     }
 
-    private boolean validSessionToken(String token){
-        return !jwtProvider.validateToken(token);
+    private boolean validateSessionToken(String token, String type){
+        return !(jwtProvider.validateToken(token) &&
+                jwtProvider.getTypeSessionToken(token).equals(type));
     }
 
     private boolean checkCountClientWithAddress(Address address){

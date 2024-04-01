@@ -76,7 +76,7 @@ class ClientControllerTest extends AbstractControllerTest {
                 = ArgumentCaptor.forClass(RequestEditEmailDto.class);
 
         verify(clientService, times(1))
-                .changeEmail(dto.capture(), accessToken, sessionToken);
+                .changeEmail(dto.capture(), accessToken, sessionTokenMobile);
         assertEquals(newEmail, dto.getValue().getEmail());
         assertEquals(clientId, jwtProvider.getClientIdFromToken(accessToken));
 
@@ -99,7 +99,7 @@ class ClientControllerTest extends AbstractControllerTest {
                 = ArgumentCaptor.forClass(RequestEditMobilePhoneDto.class);
 
         verify(clientService, times(1))
-                .changeMobilePhone(dto.capture(), accessToken, sessionToken);
+                .changeMobilePhone(dto.capture(), accessToken, sessionTokenMobile);
         assertEquals(newMobilePhone, dto.getValue().getMobilePhone());
         assertEquals(clientId, jwtProvider.getClientIdFromToken(accessToken));
     }

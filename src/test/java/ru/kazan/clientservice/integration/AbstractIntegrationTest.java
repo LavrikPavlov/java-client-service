@@ -39,7 +39,8 @@ public abstract class AbstractIntegrationTest {
     protected Integer port;
 
     protected String accessToken;
-    protected String sessionToken;
+    protected String sessionTokenMobile;
+    protected String sessionTokenEmail;
     protected String refreshToken;
 
     @BeforeEach
@@ -47,7 +48,8 @@ public abstract class AbstractIntegrationTest {
         RestAssured.baseURI = "http://localhost:" + port;
 
         accessToken = jwtProvider.genAccessToken(TestClientConstants.USER_PROFILE_DEFAULT);
-        sessionToken = jwtProvider.genSessionToken(TestClientConstants.USER_PROFILE_DEFAULT);
+        sessionTokenMobile = jwtProvider.genSessionToken(TestClientConstants.USER_PROFILE_DEFAULT, "mobile");
+        sessionTokenEmail = jwtProvider.genSessionToken(TestClientConstants.USER_PROFILE_DEFAULT, "email");
         refreshToken = jwtProvider.genRefreshToken(TestClientConstants.USER_PROFILE_DEFAULT);
     }
 

@@ -1,6 +1,9 @@
 package ru.kazan.clientservice.handler;
 
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +22,7 @@ import ru.kazan.clientservice.dto.exception.ExceptionResponse;
 import ru.kazan.clientservice.exception.ApplicationException;
 import ru.kazan.clientservice.exception.ExceptionEnum;
 
+import java.security.SignatureException;
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -56,6 +60,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ExceptionResponse> catchMethodNotAllowed(HttpServletRequest request) {
         ExceptionEnum exceptionMessage = ExceptionEnum.METHOD_NOT_ALLOWED;
+        ExceptionResponse response = getExceptionResponse(request, exceptionMessage);
+        return new ResponseEntity<>(response, exceptionMessage.getHttpStatus());
+    }
+
+    @ExceptionHandler({
+            ExpiredJwtException.class,
+            MalformedJwtException.class,
+            SignatureException.class,
+            JwtException.class
+    })
+    public ResponseEntity<ExceptionResponse> catchUnauthorized(HttpServletRequest request) {
+        ExceptionEnum exceptionMessage = ExceptionEnum.UNAUTHORIZED;
         ExceptionResponse response = getExceptionResponse(request, exceptionMessage);
         return new ResponseEntity<>(response, exceptionMessage.getHttpStatus());
     }

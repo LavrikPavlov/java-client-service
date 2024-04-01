@@ -3,6 +3,7 @@ package ru.kazan.clientservice.unit.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,6 +35,7 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("GlobalExceptionHandler: catch Application exception")
     void catchApplicationException() {
         ApplicationException exception = new ApplicationException(
                 ExceptionEnum.NOT_FOUND,
@@ -48,8 +50,21 @@ class GlobalExceptionHandlerTest {
         assertEquals("/test", responseEntity.getBody().getUrl());
     }
 
+    @Test
+    @DisplayName("GlobalExceptionHandler: catch Unauthorized exception")
+    void catchUnauthorized() {
+                when(request.getRequestURI()).thenReturn("/test");
+        ResponseEntity<ExceptionResponse> responseEntity = exceptionHandler.catchUnauthorized(request);
+
+        assertEquals(401, responseEntity.getStatusCode().value());
+        assertEquals("Unauthorized", Objects.requireNonNull(responseEntity.getBody()).getType());
+        assertEquals("Ошибка авторизации. Для доступа требуется аутентификация.",
+                responseEntity.getBody().getMessage());
+        assertEquals("/test", responseEntity.getBody().getUrl());
+    }
 
     @Test
+    @DisplayName("GlobalExceptionHandler: catch Method Not Allowed exception")
     void catchMethodNotAllowed() {
         when(request.getRequestURI()).thenReturn("/test");
         ResponseEntity<ExceptionResponse> responseEntity = exceptionHandler.catchMethodNotAllowed(request);
@@ -63,6 +78,7 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("GlobalExceptionHandler: catch Unsupported Media Type exception")
     void catchMessageNotReadableException() {
         when(request.getRequestURI()).thenReturn("/test");
         ResponseEntity<ExceptionResponse> responseEntity = exceptionHandler.catchMessageNotReadableException(request);
@@ -75,6 +91,7 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("GlobalExceptionHandler: catch Internal Server Error exception")
     void catchOtherException() {
         when(request.getRequestURI()).thenReturn("/test");
         ResponseEntity<ExceptionResponse> responseEntity = exceptionHandler.catchOtherException(request);

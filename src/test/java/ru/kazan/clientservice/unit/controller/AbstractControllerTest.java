@@ -49,13 +49,15 @@ public abstract class AbstractControllerTest {
     @SpyBean
     protected JwtProvider jwtProvider;
 
-    protected String sessionToken;
+    protected String sessionTokenMobile;
+    protected String sessionTokenEmail;
     protected String accessToken;
     protected String refreshToken;
 
     @BeforeEach
     void setUp(){
-        sessionToken = jwtProvider.genSessionToken(TestClientConstants.USER_PROFILE_DEFAULT);
+        sessionTokenMobile = jwtProvider.genSessionToken(TestClientConstants.USER_PROFILE_DEFAULT, "mobile");
+        sessionTokenEmail = jwtProvider.genSessionToken(TestClientConstants.USER_PROFILE_DEFAULT, "email");
         accessToken =  jwtProvider.genAccessToken(TestClientConstants.USER_PROFILE_DEFAULT);
         refreshToken = jwtProvider.genRefreshToken(TestClientConstants.USER_PROFILE_DEFAULT);
     }

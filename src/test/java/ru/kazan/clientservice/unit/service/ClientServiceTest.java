@@ -42,7 +42,6 @@ class ClientServiceTest {
     private ClientMapper clientMapper;
     @Mock
     private AddressMapper addressMapper;
-
     @Mock
     private JwtProvider jwtProvider;
 
@@ -61,7 +60,7 @@ class ClientServiceTest {
         address = TestClientConstants.ADDRESS_DEFAULT;
         notCorrectId = UUID.randomUUID();
         accessToken = "Bearer token";
-        sessionToken = "Token";
+        sessionToken = "token";
 
 
     }
@@ -163,7 +162,7 @@ class ClientServiceTest {
                 .email(newEmail)
                 .build();
         when(jwtProvider.validateToken(sessionToken)).thenReturn(true);
-
+        when(jwtProvider.getTypeSessionToken(sessionToken)).thenReturn("email");
         when(jwtProvider.getClientIdFromToken("token"))
                 .thenReturn(clientId);
 
@@ -173,7 +172,7 @@ class ClientServiceTest {
 
         assertEquals(newEmail, client.getEmail());
         verify(clientRepository, times(1)).save(client);
-        verify(jwtProvider, times(1)).validateToken(sessionToken);
+        verify(jwtProvider, times(1)).validateToken("token");
         verify(jwtProvider, times(1)).getClientIdFromToken("token");
     }
 
@@ -186,7 +185,7 @@ class ClientServiceTest {
                 .build();
 
         when(jwtProvider.validateToken(sessionToken)).thenReturn(true);
-
+        when(jwtProvider.getTypeSessionToken(sessionToken)).thenReturn("email");
         when(jwtProvider.getClientIdFromToken("token"))
                 .thenReturn(clientId);
 
@@ -214,7 +213,7 @@ class ClientServiceTest {
                 .build();
 
         when(jwtProvider.validateToken(sessionToken)).thenReturn(true);
-
+        when(jwtProvider.getTypeSessionToken(sessionToken)).thenReturn("email");
         when(jwtProvider.getClientIdFromToken("token"))
                 .thenReturn(clientId);
 
@@ -236,7 +235,7 @@ class ClientServiceTest {
                 .build();
 
         when(jwtProvider.validateToken(sessionToken)).thenReturn(true);
-
+        when(jwtProvider.getTypeSessionToken(sessionToken)).thenReturn("mobile");
         when(jwtProvider.getClientIdFromToken("token"))
                 .thenReturn(clientId);
 
@@ -266,7 +265,7 @@ class ClientServiceTest {
                 .build();
 
         when(jwtProvider.validateToken(sessionToken)).thenReturn(true);
-
+        when(jwtProvider.getTypeSessionToken(sessionToken)).thenReturn("mobile");
         when(jwtProvider.getClientIdFromToken("token"))
                 .thenReturn(clientId);
 
@@ -277,23 +276,23 @@ class ClientServiceTest {
 
         assertEquals(newMobilePhone, client.getMobilePhone());
         assertEquals(exception.getExceptionEnum(), exceptionEnum);
+        verify(jwtProvider, times(1)).validateToken(sessionToken);
     }
 
     @Test
     @DisplayName("ClientService Unit: Change mobile phone with not correct DTO and return exception")
     void changeMobilePhone_withNotCorrectDto_ReturnException() {
         ExceptionEnum exceptionEnum = ExceptionEnum.BAD_REQUEST;
-
         RequestEditMobilePhoneDto request = RequestEditMobilePhoneDto.builder()
                 .mobilePhone("")
                 .build();
 
         when(jwtProvider.validateToken(sessionToken)).thenReturn(true);
-
+        when(jwtProvider.getTypeSessionToken(sessionToken)).thenReturn("mobile");
         when(jwtProvider.getClientIdFromToken("token"))
                 .thenReturn(clientId);
 
-        when(clientRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+        when(clientRepository.findById(any(UUID.class))).thenReturn(Optional.of(client));
 
         ApplicationException exception = assertThrows(ApplicationException.class,
                 () -> clientService.changeMobilePhone(request, accessToken, sessionToken));
