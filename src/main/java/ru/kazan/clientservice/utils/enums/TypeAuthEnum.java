@@ -15,4 +15,6 @@ public enum TypeAuthEnum {
     @JsonValue
     public String getText(){ return text; }
 
+
+
 }

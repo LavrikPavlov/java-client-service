@@ -1,10 +1,7 @@
 package ru.kazan.clientservice.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import ru.kazan.clientservice.utils.convector.RoleEnumConverter;
 import ru.kazan.clientservice.utils.enums.RoleEnum;
@@ -14,14 +11,14 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "user_profile", schema = "user_storage")
 public class UserProfile {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "client_id")
+    @Column(name = "client_id", updatable = false, nullable = false)
     private UUID clientId;
 
     @OneToOne
@@ -34,8 +31,15 @@ public class UserProfile {
     @Convert(converter = RoleEnumConverter.class)
     private RoleEnum role;
 
-    @Column(name = "last_code")
+    @Column(name = "last_code_email")
     @Length(min = 6, max = 6)
-    private String lastCode;
+    private String lastCodeEmail;
+
+    @Column(name = "last_code_mobile")
+    @Length(min = 6, max = 6)
+    private String lastCodeMobile;
+
+    @Column(name = "refresh_token")
+    private String refreshToken;
 
 }

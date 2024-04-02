@@ -1,4 +1,4 @@
-package ru.kazan.clientservice.dto.jwt;
+package ru.kazan.clientservice.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
@@ -7,10 +7,10 @@ import ru.kazan.clientservice.utils.enums.TypeAuthEnum;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class JwtRequest {
+public class LoginWithPasswordDto {
 
     @NotNull
     @JsonProperty("login")

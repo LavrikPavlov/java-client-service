@@ -10,8 +10,6 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class RequestEditMobilePhoneDto {
-    @JsonProperty(value = "clientId")
-    String id;
 
     @Email
     @JsonProperty(value = "newMobilePhone")

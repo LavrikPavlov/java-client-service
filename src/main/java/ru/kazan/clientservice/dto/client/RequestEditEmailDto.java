@@ -11,9 +11,6 @@ import lombok.*;
 @Builder
 public class RequestEditEmailDto {
 
-    @JsonProperty(value = "clientId")
-    String id;
-
     @Email
     @JsonProperty(value = "newEmail")
     String email;

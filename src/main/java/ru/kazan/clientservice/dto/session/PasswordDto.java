@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class NewPasswordDto {
+public class PasswordDto {
 
     @NotNull
     @JsonProperty("new_password")

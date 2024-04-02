@@ -6,10 +6,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.kazan.clientservice.dto.jwt.JwtResponse;
 import ru.kazan.clientservice.dto.user.RegistrationClientDto;
+import ru.kazan.clientservice.exception.ApplicationException;
+import ru.kazan.clientservice.exception.ExceptionEnum;
 import ru.kazan.clientservice.model.Client;
+import ru.kazan.clientservice.model.UserProfile;
 import ru.kazan.clientservice.repository.ClientRepository;
 import ru.kazan.clientservice.repository.UserProfileRepository;
 import ru.kazan.clientservice.utils.enums.ClientStatus;
+import ru.kazan.clientservice.utils.security.JwtProvider;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -25,14 +29,26 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final JwtProvider jwtProvider;
 
-    @Transactional
-    public JwtResponse loginWithPassword(){
-        return null;
+    public JwtResponse refreshToken(String token) {
+
+        UUID clientId = jwtProvider.getClientIdFromToken(token);
+        UserProfile user = getUserProfile(clientId);
+
+        if(!user.getRefreshToken().equals(token))
+            throw new ApplicationException(ExceptionEnum.UNAUTHORIZED, "Refresh token not is invalid");
+
+        JwtResponse response = createResponseJwtWithTokens(user);
+
+        user.setRefreshToken(response.getRefreshToken());
+        userProfileRepository.save(user);
+
+        return response;
     }
 
     @Transactional()
-    public void createNewClient(RegistrationClientDto dto){
+    public void createNewClient(RegistrationClientDto dto) {
         Client client = Client.builder()
                 .id(UUID.randomUUID())
                 .firstName(dto.getFirstName())
@@ -46,6 +62,62 @@ public class UserService {
                 .build();
 
         clientRepository.save(client);
+    }
+
+
+    @Transactional
+    public JwtResponse loginWithEmailOrMobilePhone(String login, String password) {
+        Client client = clientRepository.findClientByEmailOrMobilePhone(login)
+                .orElseThrow(() -> new ApplicationException(ExceptionEnum.BAD_REQUEST, "Not correct login"));
+
+        UserProfile user = getUserProfile(client.getId());
+
+        checkPasswordUser(user, password);
+
+        JwtResponse response = createResponseJwtWithTokens(user);
+        user.setRefreshToken(response.getRefreshToken());
+        userProfileRepository.save(user);
+
+        return response;
+    }
+
+    @Transactional
+    public JwtResponse loginWithPassport(String login, String password) {
+        String serial = login.substring(0, 3);
+        String number = login.substring(3, 9);
+
+        Client client = clientRepository.findClientByPassportSerialNumber(serial, number)
+                .orElseThrow(() -> new ApplicationException(ExceptionEnum.BAD_REQUEST, "Not Correct login"));
+
+        UserProfile user = getUserProfile(client.getId());
+
+        checkPasswordUser(user, password);
+
+        return createResponseJwtWithTokens(user);
+    }
+
+    private void checkPasswordUser(UserProfile user, String password) {
+        if (user.getPassword() == null) {
+            throw new ApplicationException(ExceptionEnum.FORBIDDEN, "Password is NULL");
+        }
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new ApplicationException(ExceptionEnum.BAD_REQUEST, "Password is INCORRECT");
+        }
+    }
+
+    private UserProfile getUserProfile(UUID clientId) {
+        return userProfileRepository.findByClientId(clientId)
+                .orElseThrow(() -> new ApplicationException(ExceptionEnum.BAD_REQUEST, "Not verify client"));
+    }
+
+    private JwtResponse createResponseJwtWithTokens(UserProfile user) {
+        String accessToken = jwtProvider.genAccessToken(user);
+        String refreshToken = jwtProvider.genRefreshToken(user);
+
+        return new JwtResponse(
+                accessToken,
+                refreshToken
+        );
     }
 
 }

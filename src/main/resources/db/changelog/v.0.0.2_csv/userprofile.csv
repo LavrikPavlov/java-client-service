@@ -1,5 +1,5 @@
-client_id,password,role,last_code
-b3f62160-c084-41b1-8189-306d1906e2fb,,Администратор,000000
-7e0729ed-dc53-4ff7-b710-0ba6ebb65578,,Клиент,000000
-3932fb0d-b735-4018-9292-4b013b5de3ee,,Клиент,000000
-0f81f262-2b1e-473a-bdd2-395e46747288,,Клиент,000000
+client_id,password,role,last_code_email,last_code_mobile,refresh_token
+b3f62160-c084-41b1-8189-306d1906e2fb,{bcrypt}$2a$10$RTYApwBH1xXlZFGJt0nJfO/GO2p3dAMbRKyCft/8yf7nQ6eNAbmxy,Администратор,000000,000000,
+7e0729ed-dc53-4ff7-b710-0ba6ebb65578,,Клиент,000000,000000,
+3932fb0d-b735-4018-9292-4b013b5de3ee,{bcrypt}$2a$10$RTYApwBH1xXlZFGJt0nJfO/GO2p3dAMbRKyCft/8yf7nQ6eNAbmxy,Клиент,892453,342354,
+0f81f262-2b1e-473a-bdd2-395e46747288,,Клиент,000000,000000,

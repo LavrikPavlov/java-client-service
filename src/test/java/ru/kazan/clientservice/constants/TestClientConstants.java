@@ -6,8 +6,10 @@ import ru.kazan.clientservice.dto.client.ResponseShortInfoDtoImpl;
 import ru.kazan.clientservice.model.Address;
 import ru.kazan.clientservice.model.Client;
 import ru.kazan.clientservice.model.Passport;
+import ru.kazan.clientservice.model.UserProfile;
 import ru.kazan.clientservice.utils.enums.ClientStatus;
 import ru.kazan.clientservice.utils.enums.GenderEnum;
+import ru.kazan.clientservice.utils.enums.RoleEnum;
 
 import java.util.Collections;
 import java.util.Date;
@@ -21,15 +23,27 @@ public class TestClientConstants {
      * CLIENT'S IDS
      */
 
-    public static final String CLIENT_ID_CORRECT = "7e0729ed-dc53-4ff7-b710-0ba6ebb65578";
+    public static final String CLIENT_ID_FOR_CLIENT = "7e0729ed-dc53-4ff7-b710-0ba6ebb65578";
+    public static final String CLIENT_ID_FOR_SESSION = "b3f62160-c084-41b1-8189-306d1906e2fb";
+    public static final String CLIENT_ID_FOR_USER = "3932fb0d-b735-4018-9292-4b013b5de3ee";
 
-    public static final String CLIENT_ID_NOT_CORRECT = "7e07529ed-dc53-4A7-b710-0ba6ebb25578";
+
+    /**
+     * VERIFY CODE FOR TEST
+     */
+
+    public static final String VALID_CODE_FROM_DB = "892453";
+
+    public static final String NOT_VALID_CODE = "0000000";
+
+
 
     /**
      * ENTITY
      * @Client
      * @Address
      * @Passport
+     * @UserProfile
      */
 
     public static final Passport PASSPORT_DEFAULT = new Passport(
@@ -48,8 +62,8 @@ public class TestClientConstants {
             1
     );
 
-    public static final Client CLIENT_DEFAULT = new Client(
-            UUID.fromString(CLIENT_ID_CORRECT),
+    public static final Client CLIENT_DEFAULT_FOR_CLIENT = new Client(
+            UUID.fromString(CLIENT_ID_FOR_CLIENT),
             "Test",
             "Test",
             "Test",
@@ -62,13 +76,73 @@ public class TestClientConstants {
             new HashSet<>(Collections.singleton(ADDRESS_DEFAULT))
     );
 
+    public static final Client CLIENT_DEFAULT_FOR_SESSION = new Client(
+            UUID.fromString(CLIENT_ID_FOR_SESSION),
+            "Test",
+            "Test",
+            "Test",
+            "89001112233",
+            "test@test.ru",
+            20,
+            new Date(),
+            ClientStatus.ACCEPT,
+            PASSPORT_DEFAULT,
+            new HashSet<>(Collections.singleton(ADDRESS_DEFAULT))
+    );
+
+    public static final Client CLIENT_DEFAULT_FOR_USER = new Client(
+            UUID.fromString(CLIENT_ID_FOR_USER),
+            "Евгений",
+            "Ломаченко",
+            "Дмитрьевна",
+            "89992171176",
+            "anas.lomach@gmail.com",
+            49,
+            new Date(),
+            ClientStatus.ACCEPT,
+            PASSPORT_DEFAULT,
+            new HashSet<>(Collections.singleton(ADDRESS_DEFAULT))
+    );
+
+    public static final UserProfile USER_PROFILE_FOR_CLIENT = new UserProfile(
+            UUID.fromString(CLIENT_ID_FOR_CLIENT),
+            CLIENT_DEFAULT_FOR_CLIENT,
+            null,
+                RoleEnum.CLIENT,
+            "000000",
+            "000000",
+            null
+    );
+
+    public static final UserProfile USER_PROFILE_FOR_SESSION = new UserProfile(
+            UUID.fromString(CLIENT_ID_FOR_SESSION),
+            CLIENT_DEFAULT_FOR_SESSION,
+            "{bcrypt}$2a$10$bjukXxbHErsHiLGY9JV/5ugTILO/AyNQmeixB0IC7fmL.vPQvfbA6",
+            RoleEnum.ADMIN,
+            "000000",
+            "000000",
+            null
+    );
+
+    public static final UserProfile USER_PROFILE_FOR_USER = new UserProfile(
+            UUID.fromString(CLIENT_ID_FOR_USER),
+            CLIENT_DEFAULT_FOR_USER,
+            null,
+            RoleEnum.CLIENT,
+            "000000",
+            "000000",
+            null
+    );
+
+
+
+
     /**
      * RESPONSE DTO FOR ANSWER
      */
 
     public static final ResponseFullInfoDtoImpl RESPONSE_FULL_INFO_DTO =
             ResponseFullInfoDtoImpl.builder()
-                    .id(UUID.fromString("7e0729ed-dc53-4ff7-b710-0ba6ebb65578"))
                     .firstName("Алиса")
                     .lastName("Акопова")
                     .patronymic("Владимировна")
@@ -98,7 +172,6 @@ public class TestClientConstants {
 
     public static final ResponseShortInfoDtoImpl RESPONSE_SHORT_INFO_DTO =
             ResponseShortInfoDtoImpl.builder()
-                    .id(UUID.fromString("7e0729ed-dc53-4ff7-b710-0ba6ebb65578"))
                     .firstName("Алиса")
                     .lastName("Акопова")
                     .patronymic("Владимировна")

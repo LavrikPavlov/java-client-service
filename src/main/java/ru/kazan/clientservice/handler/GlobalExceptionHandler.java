@@ -1,6 +1,9 @@
 package ru.kazan.clientservice.handler;
 
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +13,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,6 +22,7 @@ import ru.kazan.clientservice.dto.exception.ExceptionResponse;
 import ru.kazan.clientservice.exception.ApplicationException;
 import ru.kazan.clientservice.exception.ExceptionEnum;
 
+import java.security.SignatureException;
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -36,7 +41,7 @@ public class GlobalExceptionHandler {
                 request.getRequestURI(),
                 exceptionEnum.getHttpStatus().value(),
                 exceptionEnum.getHttpStatus().getReasonPhrase(),
-                exceptionEnum.getErrorMessage(),
+                e.getErrorMessage(),
                 LocalDateTime.now()
         );
 
@@ -60,13 +65,26 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
+            ExpiredJwtException.class,
+            MalformedJwtException.class,
+            SignatureException.class,
+            JwtException.class
+    })
+    public ResponseEntity<ExceptionResponse> catchUnauthorized(HttpServletRequest request) {
+        ExceptionEnum exceptionMessage = ExceptionEnum.UNAUTHORIZED;
+        ExceptionResponse response = getExceptionResponse(request, exceptionMessage);
+        return new ResponseEntity<>(response, exceptionMessage.getHttpStatus());
+    }
+
+    @ExceptionHandler({
             MethodArgumentTypeMismatchException.class,
             MethodArgumentNotValidException.class,
             ConstraintViolationException.class,
             IllegalArgumentException.class,
             TransactionSystemException.class,
             InvalidDataAccessApiUsageException.class,
-            NullPointerException.class
+            NullPointerException.class,
+            MissingRequestHeaderException.class
     })
     public ResponseEntity<ExceptionResponse> catchMethodArgumentTypeMismatchException(HttpServletRequest request) {
         ExceptionEnum exceptionMessage = ExceptionEnum.BAD_REQUEST;

@@ -14,6 +14,8 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.PostgreSQLContainer;
 import ru.kazan.clientservice.config.TestConfig;
+import ru.kazan.clientservice.constants.TestClientConstants;
+import ru.kazan.clientservice.utils.security.JwtProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,12 +32,24 @@ public abstract class AbstractIntegrationTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
+    @Autowired
+    protected JwtProvider jwtProvider;
+
     @LocalServerPort
     protected Integer port;
+
+    protected String accessToken;
+    protected String sessionTokenMobile;
+    protected String sessionTokenEmail;
 
     @BeforeEach
     void setUp(){
         RestAssured.baseURI = "http://localhost:" + port;
+
+        accessToken = jwtProvider.genAccessToken(TestClientConstants.USER_PROFILE_FOR_CLIENT);
+        sessionTokenMobile = jwtProvider.genSessionTokenType(TestClientConstants.USER_PROFILE_FOR_CLIENT, "mobile");
+        sessionTokenEmail = jwtProvider.genSessionTokenType(TestClientConstants.USER_PROFILE_FOR_CLIENT, "email");
+
     }
 
     @Test

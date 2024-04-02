@@ -10,9 +10,6 @@ import lombok.*;
 @Builder
 public class DeleteAddressDto {
 
-    @JsonProperty(value = "clientId")
-    private String id;
-
     @JsonProperty(value = "addressId")
     private Long addressId;
 }

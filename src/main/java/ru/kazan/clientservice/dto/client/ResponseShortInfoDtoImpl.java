@@ -5,17 +5,12 @@ import lombok.*;
 import ru.kazan.clientservice.utils.enums.ClientStatus;
 import ru.kazan.clientservice.utils.enums.GenderEnum;
 
-import java.util.UUID;
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class ResponseShortInfoDtoImpl implements ResponseInfoDto {
-
-    @JsonProperty(value = "id")
-    UUID id;
 
     @JsonProperty(value = "first_name")
     String firstName;

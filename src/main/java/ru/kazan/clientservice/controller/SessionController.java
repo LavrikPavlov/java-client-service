@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.kazan.clientservice.dto.jwt.JwtSessionToken;
 import ru.kazan.clientservice.dto.session.EmailWithCodeDtoImpl;
 import ru.kazan.clientservice.dto.session.MobilePhoneCodeDtoImpl;
-import ru.kazan.clientservice.dto.session.NewPasswordDto;
+import ru.kazan.clientservice.dto.session.PasswordDto;
 import ru.kazan.clientservice.dto.session.TypeCodeSendDto;
 import ru.kazan.clientservice.exception.ApplicationException;
 import ru.kazan.clientservice.exception.ExceptionEnum;
@@ -33,23 +33,26 @@ public class SessionController {
 
     @PostMapping("/verify/email")
     public ResponseEntity<JwtSessionToken> verifyEmail(@RequestBody @Valid EmailWithCodeDtoImpl dto){
-        return ResponseEntity.ok().body(sessionService.getSessionToken(dto));
+        return ResponseEntity.ok().body(sessionService.getSessionToken(dto, "email"));
     }
 
-    @PostMapping("/verify/phone")
+    @PostMapping("/verify/mobile")
     public ResponseEntity<JwtSessionToken> verifyMobilePhone(@RequestBody @Valid MobilePhoneCodeDtoImpl dto){
-        return ResponseEntity.ok().body(sessionService.getSessionToken(dto));
+        return ResponseEntity.ok().body(sessionService.getSessionToken(dto, "mobile"));
     }
 
     @PatchMapping("/password/new")
     public ResponseEntity<Void> setPassword(@RequestHeader("Session") String token,
-                                            @RequestBody NewPasswordDto dto){
+                                            @RequestBody PasswordDto dto){
         sessionService.setNewPasswordClient(dto,token);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/password/change")
-    public ResponseEntity<Void> changePassword(){
+    @PatchMapping("/password/change")
+    public ResponseEntity<Void> changePassword(@RequestHeader("Authorization") String token,
+                                               @RequestHeader("Session") String sessionToken,
+                                               @RequestBody PasswordDto dto){
+        sessionService.changePasswordClient(dto, token, sessionToken);
         return ResponseEntity.ok().build();
     }
 
