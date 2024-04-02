@@ -31,8 +31,15 @@ public class UserProfile {
     @Convert(converter = RoleEnumConverter.class)
     private RoleEnum role;
 
-    @Column(name = "last_code")
+    @Column(name = "last_code_email")
     @Length(min = 6, max = 6)
-    private String lastCode;
+    private String lastCodeEmail;
+
+    @Column(name = "last_code_mobile")
+    @Length(min = 6, max = 6)
+    private String lastCodeMobile;
+
+    @Column(name = "refresh_token")
+    private String refreshToken;
 
 }

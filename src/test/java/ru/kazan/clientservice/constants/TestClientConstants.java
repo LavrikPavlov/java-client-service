@@ -23,8 +23,9 @@ public class TestClientConstants {
      * CLIENT'S IDS
      */
 
-    public static final String CLIENT_ID_CORRECT = "7e0729ed-dc53-4ff7-b710-0ba6ebb65578";
-    public static final String CLIENT_ID_FOR_PASSWORD = "b3f62160-c084-41b1-8189-306d1906e2fb";
+    public static final String CLIENT_ID_FOR_CLIENT = "7e0729ed-dc53-4ff7-b710-0ba6ebb65578";
+    public static final String CLIENT_ID_FOR_SESSION = "b3f62160-c084-41b1-8189-306d1906e2fb";
+    public static final String CLIENT_ID_FOR_USER = "3932fb0d-b735-4018-9292-4b013b5de3ee";
 
 
     /**
@@ -61,8 +62,8 @@ public class TestClientConstants {
             1
     );
 
-    public static final Client CLIENT_DEFAULT = new Client(
-            UUID.fromString(CLIENT_ID_CORRECT),
+    public static final Client CLIENT_DEFAULT_FOR_CLIENT = new Client(
+            UUID.fromString(CLIENT_ID_FOR_CLIENT),
             "Test",
             "Test",
             "Test",
@@ -75,8 +76,8 @@ public class TestClientConstants {
             new HashSet<>(Collections.singleton(ADDRESS_DEFAULT))
     );
 
-    public static final Client CLIENT_DEFAULT_FOR_PASSWORD = new Client(
-            UUID.fromString(CLIENT_ID_FOR_PASSWORD),
+    public static final Client CLIENT_DEFAULT_FOR_SESSION = new Client(
+            UUID.fromString(CLIENT_ID_FOR_SESSION),
             "Test",
             "Test",
             "Test",
@@ -89,21 +90,51 @@ public class TestClientConstants {
             new HashSet<>(Collections.singleton(ADDRESS_DEFAULT))
     );
 
-    public static final UserProfile USER_PROFILE_DEFAULT = new UserProfile(
-            UUID.fromString(CLIENT_ID_CORRECT),
-            CLIENT_DEFAULT,
+    public static final Client CLIENT_DEFAULT_FOR_USER = new Client(
+            UUID.fromString(CLIENT_ID_FOR_USER),
+            "Евгений",
+            "Ломаченко",
+            "Дмитрьевна",
+            "89992171176",
+            "anas.lomach@gmail.com",
+            49,
+            new Date(),
+            ClientStatus.ACCEPT,
+            PASSPORT_DEFAULT,
+            new HashSet<>(Collections.singleton(ADDRESS_DEFAULT))
+    );
+
+    public static final UserProfile USER_PROFILE_FOR_CLIENT = new UserProfile(
+            UUID.fromString(CLIENT_ID_FOR_CLIENT),
+            CLIENT_DEFAULT_FOR_CLIENT,
             null,
                 RoleEnum.CLIENT,
-            "000000"
+            "000000",
+            "000000",
+            null
     );
 
-    public static final UserProfile USER_PROFILE_FOR_PASSWORD = new UserProfile(
-            UUID.fromString(CLIENT_ID_FOR_PASSWORD),
-            CLIENT_DEFAULT_FOR_PASSWORD,
+    public static final UserProfile USER_PROFILE_FOR_SESSION = new UserProfile(
+            UUID.fromString(CLIENT_ID_FOR_SESSION),
+            CLIENT_DEFAULT_FOR_SESSION,
             "{bcrypt}$2a$10$bjukXxbHErsHiLGY9JV/5ugTILO/AyNQmeixB0IC7fmL.vPQvfbA6",
             RoleEnum.ADMIN,
-            "000000"
+            "000000",
+            "000000",
+            null
     );
+
+    public static final UserProfile USER_PROFILE_FOR_USER = new UserProfile(
+            UUID.fromString(CLIENT_ID_FOR_USER),
+            CLIENT_DEFAULT_FOR_USER,
+            null,
+            RoleEnum.CLIENT,
+            "000000",
+            "000000",
+            null
+    );
+
+
 
 
     /**

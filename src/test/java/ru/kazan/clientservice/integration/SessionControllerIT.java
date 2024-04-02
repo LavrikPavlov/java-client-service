@@ -22,8 +22,8 @@ class SessionControllerIT extends AbstractIntegrationTest{
 
     @BeforeEach
     void setUpSessionController(){
-        accessToken = "Bearer " + jwtProvider.genAccessToken(TestClientConstants.USER_PROFILE_FOR_PASSWORD);
-        sessionToken = jwtProvider.genSessionToken(UUID.fromString(TestClientConstants.CLIENT_ID_FOR_PASSWORD));
+        accessToken = "Bearer " + jwtProvider.genAccessToken(TestClientConstants.USER_PROFILE_FOR_SESSION);
+        sessionToken = jwtProvider.genSessionToken(UUID.fromString(TestClientConstants.CLIENT_ID_FOR_SESSION));
     }
 
     @ParameterizedTest

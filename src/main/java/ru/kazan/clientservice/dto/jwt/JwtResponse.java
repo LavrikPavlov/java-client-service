@@ -13,6 +13,6 @@ public class JwtResponse {
     @JsonProperty("access_token")
     private String accessToken;
 
-    @JsonProperty("session_token")
+    @JsonProperty("refresh_token")
     private String refreshToken;
 }

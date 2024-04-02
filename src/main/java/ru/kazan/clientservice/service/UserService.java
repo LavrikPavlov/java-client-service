@@ -31,9 +31,24 @@ public class UserService {
 
     private final JwtProvider jwtProvider;
 
+    public JwtResponse refreshToken(String token) {
+
+        UUID clientId = jwtProvider.getClientIdFromToken(token);
+        UserProfile user = getUserProfile(clientId);
+
+        if(!user.getRefreshToken().equals(token))
+            throw new ApplicationException(ExceptionEnum.UNAUTHORIZED, "Refresh token not is invalid");
+
+        JwtResponse response = createResponseJwtWithTokens(user);
+
+        user.setRefreshToken(response.getRefreshToken());
+        userProfileRepository.save(user);
+
+        return response;
+    }
 
     @Transactional()
-    public void createNewClient(RegistrationClientDto dto){
+    public void createNewClient(RegistrationClientDto dto) {
         Client client = Client.builder()
                 .id(UUID.randomUUID())
                 .firstName(dto.getFirstName())
@@ -51,7 +66,7 @@ public class UserService {
 
 
     @Transactional
-    public JwtResponse loginWithEmailOrMobilePhone(String login, String password){
+    public JwtResponse loginWithEmailOrMobilePhone(String login, String password) {
         Client client = clientRepository.findClientByEmailOrMobilePhone(login)
                 .orElseThrow(() -> new ApplicationException(ExceptionEnum.BAD_REQUEST, "Not correct login"));
 
@@ -59,13 +74,17 @@ public class UserService {
 
         checkPasswordUser(user, password);
 
-        return createResponseJwtWithTokens(user);
+        JwtResponse response = createResponseJwtWithTokens(user);
+        user.setRefreshToken(response.getRefreshToken());
+        userProfileRepository.save(user);
+
+        return response;
     }
 
     @Transactional
-    public JwtResponse loginWithPassport(String login, String password){
-        String serial = login.substring(0,3);
-        String number = login.substring(3,9);
+    public JwtResponse loginWithPassport(String login, String password) {
+        String serial = login.substring(0, 3);
+        String number = login.substring(3, 9);
 
         Client client = clientRepository.findClientByPassportSerialNumber(serial, number)
                 .orElseThrow(() -> new ApplicationException(ExceptionEnum.BAD_REQUEST, "Not Correct login"));
@@ -77,21 +96,21 @@ public class UserService {
         return createResponseJwtWithTokens(user);
     }
 
-    private void checkPasswordUser(UserProfile user, String password){
-        if(user.getPassword() == null){
+    private void checkPasswordUser(UserProfile user, String password) {
+        if (user.getPassword() == null) {
             throw new ApplicationException(ExceptionEnum.FORBIDDEN, "Password is NULL");
         }
-        if(!passwordEncoder.matches(password, user.getPassword())){
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new ApplicationException(ExceptionEnum.BAD_REQUEST, "Password is INCORRECT");
         }
     }
 
-    private UserProfile getUserProfile(UUID clientId){
+    private UserProfile getUserProfile(UUID clientId) {
         return userProfileRepository.findByClientId(clientId)
                 .orElseThrow(() -> new ApplicationException(ExceptionEnum.BAD_REQUEST, "Not verify client"));
     }
 
-    private JwtResponse createResponseJwtWithTokens(UserProfile user){
+    private JwtResponse createResponseJwtWithTokens(UserProfile user) {
         String accessToken = jwtProvider.genAccessToken(user);
         String refreshToken = jwtProvider.genRefreshToken(user);
 

@@ -56,9 +56,9 @@ public abstract class AbstractControllerTest {
 
     @BeforeEach
     void setUp(){
-        sessionTokenMobile = jwtProvider.genSessionTokenType(TestClientConstants.USER_PROFILE_DEFAULT, "mobile");
-        sessionTokenEmail = jwtProvider.genSessionTokenType(TestClientConstants.USER_PROFILE_DEFAULT, "email");
-        accessToken =  jwtProvider.genAccessToken(TestClientConstants.USER_PROFILE_DEFAULT);
-        refreshToken = jwtProvider.genRefreshToken(TestClientConstants.USER_PROFILE_DEFAULT);
+        sessionTokenMobile = jwtProvider.genSessionTokenType(TestClientConstants.USER_PROFILE_FOR_CLIENT, "mobile");
+        sessionTokenEmail = jwtProvider.genSessionTokenType(TestClientConstants.USER_PROFILE_FOR_CLIENT, "email");
+        accessToken =  jwtProvider.genAccessToken(TestClientConstants.USER_PROFILE_FOR_CLIENT);
+        refreshToken = jwtProvider.genRefreshToken(TestClientConstants.USER_PROFILE_FOR_CLIENT);
     }
 }

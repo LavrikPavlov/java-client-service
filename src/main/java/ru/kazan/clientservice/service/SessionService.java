@@ -27,6 +27,8 @@ public class SessionService {
 
     private static final Integer MIN_CODE_VALUE = 100_000;
     private static final Integer MAX_CODE_VALUE = 999_999;
+
+    private static final String DEFAULT_VALUE_VERIFY = "000000";
     private static final Random RANDOM_VALUE = new SecureRandom();
 
     private final ClientRepository clientRepository;
@@ -40,7 +42,7 @@ public class SessionService {
     @Transactional
     public void verifyCode(TypeCodeSendDto dto) {
         Client client = getClientContact(dto.getContact());
-        updateUserProfile(client);
+        updateUserProfile(client, dto.getType());
     }
 
     public JwtSessionToken getSessionToken(CodeDto dto, String contact){
@@ -94,25 +96,33 @@ public class SessionService {
             throw new ApplicationException(ExceptionEnum.CONFLICT, "Password is same");
     }
 
-    private void updateUserProfile(Client client) {
+    private void updateUserProfile(Client client, String type) {
         String code = genNewCode();
 
         UserProfile user = userProfileRepository.findByClientId(client.getId())
                 .orElseGet(() -> createUserProfile(client));
 
-        user.setLastCode(code);
+        if(type.equals("email"))
+            user.setLastCodeEmail(code);
+
+        if(type.equals("mobile"))
+            user.setLastCodeEmail(code);
+
         userProfileRepository.save(user);
     }
 
     private boolean checkValidateVerifyCode(UserProfile user, CodeDto dto){
-        return user.getLastCode().equals(dto.getVerifyCode()) && !dto.getVerifyCode().equals("000000");
+        return (user.getLastCodeEmail().equals(dto.getVerifyCode()) ||
+                user.getLastCodeMobile().equals(dto.getVerifyCode()))
+                && !dto.getVerifyCode().equals(DEFAULT_VALUE_VERIFY);
     }
 
     private UserProfile createUserProfile(Client client){
         return UserProfile.builder()
                 .client(client)
                 .role(RoleEnum.NOT_CLIENT)
-                .lastCode("000000")
+                .lastCodeEmail(DEFAULT_VALUE_VERIFY)
+                .lastCodeMobile(DEFAULT_VALUE_VERIFY)
                 .build();
     }
 

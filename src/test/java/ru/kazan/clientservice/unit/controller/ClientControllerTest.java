@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Disabled
 class ClientControllerTest extends AbstractControllerTest {
 
-    private final UUID clientId = UUID.fromString(TestClientConstants.CLIENT_ID_CORRECT);
+    private final UUID clientId = UUID.fromString(TestClientConstants.CLIENT_ID_FOR_CLIENT);
 
     @BeforeEach
     void setUpClientController(){

@@ -25,7 +25,17 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: last_code
+                  name: last_code_email
                   type: char(6)
                   constraints:
                     nullable: false
+              - column:
+                  name: last_code_mobile
+                  type: char(6)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: refresh_token
+                  type: varchar(255)
+                  constraints:
+                    unique: false

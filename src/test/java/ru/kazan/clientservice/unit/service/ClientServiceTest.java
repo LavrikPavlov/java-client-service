@@ -55,8 +55,8 @@ class ClientServiceTest {
 
     @BeforeEach
     void setUp(){
-        clientId = UUID.fromString(TestClientConstants.CLIENT_ID_CORRECT);
-        client = TestClientConstants.CLIENT_DEFAULT;
+        clientId = UUID.fromString(TestClientConstants.CLIENT_ID_FOR_CLIENT);
+        client = TestClientConstants.CLIENT_DEFAULT_FOR_CLIENT;
         address = TestClientConstants.ADDRESS_DEFAULT;
         notCorrectId = UUID.randomUUID();
         accessToken = "Bearer token";
@@ -420,7 +420,7 @@ class ClientServiceTest {
     void deleteAddress_successfulDeleteAddress_withTwoClient() {
         Address deleteAddress = TestClientConstants.ADDRESS_DEFAULT;
 
-        Client newClient = TestClientConstants.CLIENT_DEFAULT;
+        Client newClient = TestClientConstants.CLIENT_DEFAULT_FOR_CLIENT;
         newClient.setId(UUID.randomUUID());
         newClient.getAddress().add(deleteAddress);
 
