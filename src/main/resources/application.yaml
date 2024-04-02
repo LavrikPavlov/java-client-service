@@ -26,6 +26,6 @@ client-service:
   security:
     jwt:
       secret-key: NEsyUko5VDZNOFczRjVBN0wxRzBZNlA5VjFFMlg3QzNRNUk4VTJENVowSDZCNE4K
-      time-access: 1800000
-      time-refresh: 3600000
-      time-session: 600000
+      time-access: 600000
+      time-refresh: 1800000
+      time-session: 300000

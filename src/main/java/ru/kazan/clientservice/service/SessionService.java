@@ -49,27 +49,49 @@ public class SessionService {
         UserProfile user = userProfileRepository.findByClientId(clientId)
                 .orElseThrow(() -> new ApplicationException(ExceptionEnum.BAD_REQUEST));
 
-        if(user.getLastCode().equals(dto.getVerifyCode()))
-            return new JwtSessionToken(jwtProvider.genSessionToken(user, contact));
+        if(checkValidateVerifyCode(user, dto))
+            return new JwtSessionToken(jwtProvider.genSessionTokenType(user, contact));
         else
             throw new ApplicationException(ExceptionEnum.BAD_REQUEST);
     }
 
     @Transactional
-    public void setNewPasswordClient(NewPasswordDto dto, String sessionToken){
-        if(!jwtProvider.validateToken(sessionToken))
-            throw new ApplicationException(ExceptionEnum.BAD_REQUEST, "Not valid session token");
+    public void setNewPasswordClient(PasswordDto dto, String sessionToken){
+        jwtProvider.validateToken(sessionToken);
 
         UUID clientId = jwtProvider.getClientIdFromToken(sessionToken);
         UserProfile user = getUserByClientId(clientId);
-        setPasswordWithEncoder(user, dto.getNewPassword());
+        String password = dto.getNewPassword();
+
+        if(password.isEmpty()){
+            throw new ApplicationException(ExceptionEnum.FORBIDDEN, "Password is EMPTY");
+        }
+
+        String newPassword = passwordEncoder.encode(password);
+
+        user.setPassword(newPassword);
+        userProfileRepository.save(user);
+    }
+
+    @Transactional
+    public void changePasswordClient(PasswordDto dto, String accessToken, String sessionToken){
+        jwtProvider.validateToken(sessionToken);
+
+        UUID clientId = jwtProvider.getClientIdFromToken(accessToken.substring(7));
+        UserProfile user = getUserByClientId(clientId);
+        checkPassword(user, dto.getNewPassword());
+
+        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        userProfileRepository.save(user);
 
     }
 
-    private void setPasswordWithEncoder(UserProfile user, String password){
-        String newPassword = passwordEncoder.encode(password);
-        user.setPassword(newPassword);
-        userProfileRepository.save(user);
+    private void checkPassword(UserProfile user, String password){
+        if(password.isEmpty()){
+            throw new ApplicationException(ExceptionEnum.FORBIDDEN, "Password is EMPTY");
+        }
+        if(passwordEncoder.matches(password, user.getPassword()))
+            throw new ApplicationException(ExceptionEnum.CONFLICT, "Password is same");
     }
 
     private void updateUserProfile(Client client) {
@@ -80,6 +102,10 @@ public class SessionService {
 
         user.setLastCode(code);
         userProfileRepository.save(user);
+    }
+
+    private boolean checkValidateVerifyCode(UserProfile user, CodeDto dto){
+        return user.getLastCode().equals(dto.getVerifyCode()) && !dto.getVerifyCode().equals("000000");
     }
 
     private UserProfile createUserProfile(Client client){

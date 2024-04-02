@@ -42,11 +42,16 @@ public class JwtProvider {
         return buildToken(claims, user.getClient().getId(), jwtTimeAccess);
     }
 
-    public String genSessionToken(UserProfile user, String contact) {
+    public String genSessionTokenType(UserProfile user, String contact) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("contact", contact);
 
         return buildToken(claims, user.getClient().getId(), jwtTimeSession);
+    }
+
+    public String genSessionToken(UUID clientId) {
+
+        return buildToken(new HashMap<>(), clientId, jwtTimeSession);
     }
 
     public String genRefreshToken(UserProfile user) {

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class JwtSessionToken {
 
-    @JsonProperty("sessionToken")
+    @JsonProperty("session_token")
     private String sessionToken;
 
 }

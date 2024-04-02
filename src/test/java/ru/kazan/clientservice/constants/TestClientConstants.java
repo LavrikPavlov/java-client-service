@@ -24,6 +24,17 @@ public class TestClientConstants {
      */
 
     public static final String CLIENT_ID_CORRECT = "7e0729ed-dc53-4ff7-b710-0ba6ebb65578";
+    public static final String CLIENT_ID_FOR_PASSWORD = "b3f62160-c084-41b1-8189-306d1906e2fb";
+
+
+    /**
+     * VERIFY CODE FOR TEST
+     */
+
+    public static final String VALID_CODE_FROM_DB = "892453";
+
+    public static final String NOT_VALID_CODE = "0000000";
+
 
 
     /**
@@ -64,13 +75,36 @@ public class TestClientConstants {
             new HashSet<>(Collections.singleton(ADDRESS_DEFAULT))
     );
 
+    public static final Client CLIENT_DEFAULT_FOR_PASSWORD = new Client(
+            UUID.fromString(CLIENT_ID_FOR_PASSWORD),
+            "Test",
+            "Test",
+            "Test",
+            "89001112233",
+            "test@test.ru",
+            20,
+            new Date(),
+            ClientStatus.ACCEPT,
+            PASSPORT_DEFAULT,
+            new HashSet<>(Collections.singleton(ADDRESS_DEFAULT))
+    );
+
     public static final UserProfile USER_PROFILE_DEFAULT = new UserProfile(
             UUID.fromString(CLIENT_ID_CORRECT),
             CLIENT_DEFAULT,
             null,
-            RoleEnum.CLIENT,
+                RoleEnum.CLIENT,
             "000000"
     );
+
+    public static final UserProfile USER_PROFILE_FOR_PASSWORD = new UserProfile(
+            UUID.fromString(CLIENT_ID_FOR_PASSWORD),
+            CLIENT_DEFAULT_FOR_PASSWORD,
+            "{bcrypt}$2a$10$bjukXxbHErsHiLGY9JV/5ugTILO/AyNQmeixB0IC7fmL.vPQvfbA6",
+            RoleEnum.ADMIN,
+            "000000"
+    );
+
 
     /**
      * RESPONSE DTO FOR ANSWER
