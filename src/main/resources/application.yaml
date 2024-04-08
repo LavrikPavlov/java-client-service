@@ -1,6 +1,9 @@
 spring:
   profiles:
     active: dev
+  jackson:
+    serialization:
+      INDENT_OUTPUT: true
 
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -29,3 +32,12 @@ client-service:
       time-access: 600000
       time-refresh: 1800000
       time-session: 300000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
