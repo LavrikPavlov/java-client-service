@@ -16,7 +16,6 @@ public class LoginWithPasswordDto {
     @JsonProperty("login")
     private String login;
 
-    @NotNull
     @JsonProperty("password")
     private String password;
 

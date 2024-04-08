@@ -25,8 +25,6 @@ public class TestClientConstants {
 
     public static final String CLIENT_ID_FOR_CLIENT = "7e0729ed-dc53-4ff7-b710-0ba6ebb65578";
     public static final String CLIENT_ID_FOR_SESSION = "b3f62160-c084-41b1-8189-306d1906e2fb";
-    public static final String CLIENT_ID_FOR_USER = "3932fb0d-b735-4018-9292-4b013b5de3ee";
-
 
     /**
      * VERIFY CODE FOR TEST
@@ -48,8 +46,8 @@ public class TestClientConstants {
 
     public static final Passport PASSPORT_DEFAULT = new Passport(
             1L,
-            1111,
-            222333,
+            "1111",
+            "222333",
             GenderEnum.MALE,
             "Test"
     );
@@ -90,20 +88,6 @@ public class TestClientConstants {
             new HashSet<>(Collections.singleton(ADDRESS_DEFAULT))
     );
 
-    public static final Client CLIENT_DEFAULT_FOR_USER = new Client(
-            UUID.fromString(CLIENT_ID_FOR_USER),
-            "Евгений",
-            "Ломаченко",
-            "Дмитрьевна",
-            "89992171176",
-            "anas.lomach@gmail.com",
-            49,
-            new Date(),
-            ClientStatus.ACCEPT,
-            PASSPORT_DEFAULT,
-            new HashSet<>(Collections.singleton(ADDRESS_DEFAULT))
-    );
-
     public static final UserProfile USER_PROFILE_FOR_CLIENT = new UserProfile(
             UUID.fromString(CLIENT_ID_FOR_CLIENT),
             CLIENT_DEFAULT_FOR_CLIENT,
@@ -124,15 +108,6 @@ public class TestClientConstants {
             null
     );
 
-    public static final UserProfile USER_PROFILE_FOR_USER = new UserProfile(
-            UUID.fromString(CLIENT_ID_FOR_USER),
-            CLIENT_DEFAULT_FOR_USER,
-            null,
-            RoleEnum.CLIENT,
-            "000000",
-            "000000",
-            null
-    );
 
 
 
@@ -153,8 +128,8 @@ public class TestClientConstants {
                     .dateRegistration("10.03.2024, 00:00")
                     .passport(new Passport(
                             4L,
-                            5050,
-                            111000,
+                            "5050",
+                            "119223",
                             GenderEnum.FEMALE,
                             "ГУ МВД по Новосибирской обл. Центральный р-он"
                     ))

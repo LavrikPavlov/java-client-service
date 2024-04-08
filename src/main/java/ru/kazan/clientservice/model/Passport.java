@@ -22,10 +22,10 @@ public class Passport {
     private Long id;
 
     @NotNull
-    private Integer serial;
+    private String serial;
 
     @NotNull
-    private Integer number;
+    private String number;
 
     @Convert(converter = GenderEnumConverter.class)
     private GenderEnum gender;

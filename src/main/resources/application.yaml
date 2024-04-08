@@ -25,7 +25,7 @@ springdoc:
 client-service:
   security:
     jwt:
-      secret-key:
+      secret-key: 4K2RJ9T6M8W3F5A7L1G0Y6P9V1E2X7C3Q5I8U2D5Z0H6B4N
       time-access: 600000
       time-refresh: 1800000
       time-session: 300000
