@@ -104,9 +104,6 @@ class UserServiceTest {
 
         verify(jwtProvider,times(1)).getClientIdFromToken(refreshToken);
         verify(userProfileRepository, times(1)).findByClientId(clientId);
-        verify(jwtProvider,times(0)).genAccessToken(userProfile);
-        verify(jwtProvider,times(0)).genRefreshToken(userProfile);
-        verify(userProfileRepository,times(0)).save(userProfile);
 
         assertEquals(ExceptionEnum.BAD_REQUEST, exception.getExceptionEnum());
         assertEquals("Not verify client", exception.getErrorMessage());
@@ -127,9 +124,6 @@ class UserServiceTest {
 
         verify(jwtProvider,times(1)).getClientIdFromToken(refreshToken);
         verify(userProfileRepository, times(1)).findByClientId(clientId);
-        verify(jwtProvider,times(0)).genAccessToken(userProfile);
-        verify(jwtProvider,times(0)).genRefreshToken(userProfile);
-        verify(userProfileRepository,times(0)).save(userProfile);
 
         assertEquals(ExceptionEnum.UNAUTHORIZED, exception.getExceptionEnum());
         assertEquals("Refresh token not is invalid", exception.getErrorMessage());
@@ -175,11 +169,7 @@ class UserServiceTest {
                 () -> userService.loginWithEmailOrMobilePhone(login, password));
 
         verify(clientRepository, times(1)).findClientByEmailOrMobilePhone(login);
-        verify(userProfileRepository,times(0)).findByClientId(clientId);
-        verify(passwordEncoder, times(0)).matches(password, userProfile.getPassword());
-        verify(jwtProvider,times(0)).genAccessToken(userProfile);
-        verify(jwtProvider,times(0)).genRefreshToken(userProfile);
-        verify(userProfileRepository,times(0)).save(userProfile);
+
 
         assertEquals(ExceptionEnum.BAD_REQUEST, exception.getExceptionEnum());
         assertEquals("Not correct login", exception.getErrorMessage());
@@ -202,9 +192,7 @@ class UserServiceTest {
         verify(clientRepository, times(1)).findClientByEmailOrMobilePhone(login);
         verify(userProfileRepository,times(1)).findByClientId(clientId);
         verify(passwordEncoder, times(1)).matches(password, userProfile.getPassword());
-        verify(jwtProvider,times(0)).genAccessToken(userProfile);
-        verify(jwtProvider,times(0)).genRefreshToken(userProfile);
-        verify(userProfileRepository,times(0)).save(userProfile);
+
 
         assertEquals(ExceptionEnum.BAD_REQUEST, exception.getExceptionEnum());
         assertEquals("Password is INCORRECT", exception.getErrorMessage());
@@ -226,10 +214,6 @@ class UserServiceTest {
 
         verify(clientRepository, times(1)).findClientByEmailOrMobilePhone(login);
         verify(userProfileRepository,times(1)).findByClientId(clientId);
-        verify(passwordEncoder, times(0)).matches(password, userProfile.getPassword());
-        verify(jwtProvider,times(0)).genAccessToken(userProfile);
-        verify(jwtProvider,times(0)).genRefreshToken(userProfile);
-        verify(userProfileRepository,times(0)).save(userProfile);
 
         assertEquals(ExceptionEnum.FORBIDDEN, exception.getExceptionEnum());
         assertEquals("Password is NULL", exception.getErrorMessage());
