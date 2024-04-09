@@ -51,6 +51,7 @@ public class ClientService {
 
     @Transactional
     public void changeEmail(RequestEditEmailDto dto, String token, String sessionToken){
+
         UUID clientId = getIdFromToken(token);
         Client client = getClient(clientId);
 

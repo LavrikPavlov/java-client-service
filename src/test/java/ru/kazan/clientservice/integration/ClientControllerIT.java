@@ -1,15 +1,17 @@
 package ru.kazan.clientservice.integration;
 
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.kazan.clientservice.constants.TestClientConstants;
-import ru.kazan.clientservice.dto.client.*;
+import ru.kazan.clientservice.dto.client.DeleteAddressDto;
+import ru.kazan.clientservice.dto.client.NewAddressDto;
+import ru.kazan.clientservice.dto.client.RequestEditEmailDto;
+import ru.kazan.clientservice.dto.client.RequestEditMobilePhoneDto;
 import ru.kazan.clientservice.service.ClientService;
 
 import java.util.HashMap;
@@ -17,18 +19,13 @@ import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 class ClientControllerIT extends AbstractIntegrationTest {
 
     @Autowired
     private ClientService clientService;
-
-    @BeforeEach
-    void setUpClientController(){
-        accessToken = "Bearer " + accessToken;
-    }
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
@@ -166,6 +163,25 @@ class ClientControllerIT extends AbstractIntegrationTest {
     }
 
     @Test
+    @DisplayName("ClientController: Edit client email with another session token and should return answer 401")
+    void editClientEmail_withSessionTokenMobile_thenReturnResponse_401() {
+        RequestEditEmailDto request = RequestEditEmailDto.builder()
+                .email("new@mail.ru")
+                .build();
+
+        given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(request)
+                .header("Authorization", accessToken)
+                .header("Session", sessionTokenMobile)
+                .when()
+                .patch("/client/edit/email")
+                .then()
+                .statusCode(401);
+    }
+
+    @Test
     @DisplayName("ClientController: Edit client email without session token and should return answer 400")
     void editClientEmail_WithoutSessionToken_thenReturnResponse_400() {
         RequestEditEmailDto request = RequestEditEmailDto.builder()
@@ -278,6 +294,26 @@ class ClientControllerIT extends AbstractIntegrationTest {
                 .patch("/client/edit/mobile-phone")
                 .then()
                 .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("ClientController: Edit client mobile phone with another session token and should return answer 401")
+    void editClientMobilePhone_withSessionTokenEmail_thenReturnResponse_401(){
+        RequestEditMobilePhoneDto request = RequestEditMobilePhoneDto.builder()
+                .mobilePhone("89111231234")
+                .build();
+
+        given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(request)
+                .header("Authorization", accessToken)
+                .header("Session", sessionTokenEmail)
+                .when()
+                .patch("/client/edit/mobile-phone")
+                .then()
+                .statusCode(401);
+
     }
 
     @Test

@@ -39,12 +39,7 @@ public class UserService {
         if(!user.getRefreshToken().equals(token))
             throw new ApplicationException(ExceptionEnum.UNAUTHORIZED, "Refresh token not is invalid");
 
-        JwtResponse response = createResponseJwtWithTokens(user);
-
-        user.setRefreshToken(response.getRefreshToken());
-        userProfileRepository.save(user);
-
-        return response;
+        return createResponseJwtWithTokens(user);
     }
 
     @Transactional()
