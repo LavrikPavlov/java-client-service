@@ -46,7 +46,7 @@ public abstract class AbstractIntegrationTest {
     void setUp(){
         RestAssured.baseURI = "http://localhost:" + port;
 
-        accessToken = jwtProvider.genAccessToken(TestClientConstants.USER_PROFILE_FOR_CLIENT);
+        accessToken = "Bearer " + jwtProvider.genAccessToken(TestClientConstants.USER_PROFILE_FOR_CLIENT);
         sessionTokenMobile = jwtProvider.genSessionTokenType(TestClientConstants.USER_PROFILE_FOR_CLIENT, "mobile");
         sessionTokenEmail = jwtProvider.genSessionTokenType(TestClientConstants.USER_PROFILE_FOR_CLIENT, "email");
 

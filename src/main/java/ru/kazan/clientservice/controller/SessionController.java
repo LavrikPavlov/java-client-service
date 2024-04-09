@@ -18,8 +18,11 @@ import ru.kazan.clientservice.service.SessionService;
 @RequestMapping("/session")
 public class SessionController {
 
-    private final SessionService sessionService;
+    private static final String SESSION_EMAIL = "email";
 
+    private static final String SESSION_MOBILE = "mobile";
+
+    private final SessionService sessionService;
 
     @PostMapping("/verify")
     public ResponseEntity<Void> verifyCode(@Valid @RequestBody TypeCodeSendDto dto){
@@ -33,12 +36,12 @@ public class SessionController {
 
     @PostMapping("/verify/email")
     public ResponseEntity<JwtSessionToken> verifyEmail(@RequestBody @Valid EmailWithCodeDtoImpl dto){
-        return ResponseEntity.ok().body(sessionService.getSessionToken(dto, "email"));
+        return ResponseEntity.ok().body(sessionService.getSessionToken(dto, SESSION_EMAIL));
     }
 
     @PostMapping("/verify/mobile")
     public ResponseEntity<JwtSessionToken> verifyMobilePhone(@RequestBody @Valid MobilePhoneCodeDtoImpl dto){
-        return ResponseEntity.ok().body(sessionService.getSessionToken(dto, "mobile"));
+        return ResponseEntity.ok().body(sessionService.getSessionToken(dto, SESSION_MOBILE));
     }
 
     @PatchMapping("/password/new")

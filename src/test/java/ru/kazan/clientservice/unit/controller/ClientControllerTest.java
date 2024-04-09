@@ -1,7 +1,6 @@
 package ru.kazan.clientservice.unit.controller;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -18,14 +17,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Disabled
+
 class ClientControllerTest extends AbstractControllerTest {
 
     private final UUID clientId = UUID.fromString(TestClientConstants.CLIENT_ID_FOR_CLIENT);
 
     @BeforeEach
     void setUpClientController(){
-        accessToken = "Bearer " + accessToken;
     }
 
     @Test
@@ -68,6 +66,7 @@ class ClientControllerTest extends AbstractControllerTest {
 
         mockMvc.perform(patch("/client/edit/email")
                         .header("Authorization", accessToken)
+                        .header("Session", sessionTokenEmail)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().is(200));
@@ -76,9 +75,10 @@ class ClientControllerTest extends AbstractControllerTest {
                 = ArgumentCaptor.forClass(RequestEditEmailDto.class);
 
         verify(clientService, times(1))
-                .changeEmail(dto.capture(), accessToken, sessionTokenMobile);
+                .changeEmail(dto.capture(),  eq(accessToken), eq(sessionTokenEmail));
+
         assertEquals(newEmail, dto.getValue().getEmail());
-        assertEquals(clientId, jwtProvider.getClientIdFromToken(accessToken));
+        assertEquals(clientId, jwtProvider.getClientIdFromToken(accessToken.substring(7)));
 
     }
 
@@ -92,6 +92,8 @@ class ClientControllerTest extends AbstractControllerTest {
 
         mockMvc.perform(patch("/client/edit/mobile-phone")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", accessToken)
+                        .header("Session", sessionTokenMobile)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().is(200));
 
@@ -99,9 +101,10 @@ class ClientControllerTest extends AbstractControllerTest {
                 = ArgumentCaptor.forClass(RequestEditMobilePhoneDto.class);
 
         verify(clientService, times(1))
-                .changeMobilePhone(dto.capture(), accessToken, sessionTokenMobile);
+                .changeMobilePhone(dto.capture(),  eq(accessToken), eq(sessionTokenMobile));
+
         assertEquals(newMobilePhone, dto.getValue().getMobilePhone());
-        assertEquals(clientId, jwtProvider.getClientIdFromToken(accessToken));
+        assertEquals(clientId, jwtProvider.getClientIdFromToken(accessToken.substring(7)));
     }
 
     @Test
@@ -119,19 +122,21 @@ class ClientControllerTest extends AbstractControllerTest {
 
         mockMvc.perform(put("/client/edit/address")
                 .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", accessToken)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().is(200));
 
         ArgumentCaptor<NewAddressDto> dto
                 = ArgumentCaptor.forClass(NewAddressDto.class);
 
-        verify(clientService, times(1)).addNewAddress(dto.capture(), accessToken);
+        verify(clientService, times(1)).addNewAddress(dto.capture(),  eq(accessToken));
+
         assertEquals(newAddress.getCountry(), dto.getValue().getCountry());
         assertEquals(newAddress.getCity(), dto.getValue().getCity());
         assertEquals(newAddress.getStreet(), dto.getValue().getStreet());
         assertEquals(newAddress.getHouse(), dto.getValue().getHouse());
         assertEquals(newAddress.getApartment(), dto.getValue().getApartment());
-        assertEquals(clientId, jwtProvider.getClientIdFromToken(accessToken));
+        assertEquals(clientId, jwtProvider.getClientIdFromToken(accessToken.substring(7)));
     }
 
     @Test
@@ -143,6 +148,7 @@ class ClientControllerTest extends AbstractControllerTest {
                 .build();
 
         mockMvc.perform(delete("/client/edit/delete/address")
+                        .header("Authorization", accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().is(200));
@@ -150,8 +156,8 @@ class ClientControllerTest extends AbstractControllerTest {
         ArgumentCaptor<DeleteAddressDto> dto
                 = ArgumentCaptor.forClass(DeleteAddressDto.class);
 
-        verify(clientService, times(1)).deleteAddress(dto.capture(), anyString());
+        verify(clientService, times(1)).deleteAddress(dto.capture(),  eq(accessToken));
         assertEquals(request.getAddressId(), dto.getValue().getAddressId());
-        assertEquals(clientId, jwtProvider.getClientIdFromToken(accessToken));
+        assertEquals(clientId, jwtProvider.getClientIdFromToken(accessToken.substring(7)));
     }
 }

@@ -42,7 +42,17 @@ public class SessionService {
     @Transactional
     public void verifyCode(TypeCodeSendDto dto) {
         Client client = getClientContact(dto.getContact());
-        updateUserProfile(client, dto.getType());
+        String code = genNewCode();
+
+        UserProfile user = userProfileRepository.findByClientId(client.getId())
+                .orElseGet(() -> createUserProfile(client));
+
+        if(dto.getType().equals("email"))
+            user.setLastCodeEmail(code);
+        if(dto.getType().equals("mobile"))
+            user.setLastCodeEmail(code);
+
+        userProfileRepository.save(user);
     }
 
     public JwtSessionToken getSessionToken(CodeDto dto, String contact){
@@ -54,12 +64,13 @@ public class SessionService {
         if(checkValidateVerifyCode(user, dto))
             return new JwtSessionToken(jwtProvider.genSessionTokenType(user, contact));
         else
-            throw new ApplicationException(ExceptionEnum.BAD_REQUEST);
+            throw new ApplicationException(ExceptionEnum.BAD_REQUEST, "Not correct verification code");
     }
 
     @Transactional
     public void setNewPasswordClient(PasswordDto dto, String sessionToken){
-        jwtProvider.validateToken(sessionToken);
+        if(!jwtProvider.validateToken(sessionToken))
+            throw new ApplicationException(ExceptionEnum.BAD_REQUEST, "Invalid session token");
 
         UUID clientId = jwtProvider.getClientIdFromToken(sessionToken);
         UserProfile user = getUserByClientId(clientId);
@@ -77,9 +88,10 @@ public class SessionService {
 
     @Transactional
     public void changePasswordClient(PasswordDto dto, String accessToken, String sessionToken){
-        jwtProvider.validateToken(sessionToken);
+        if(!jwtProvider.validateToken(sessionToken))
+            throw new ApplicationException(ExceptionEnum.BAD_REQUEST, "Invalid session token");
 
-        UUID clientId = jwtProvider.getClientIdFromToken(accessToken.substring(7));
+        UUID clientId = getClientUUID(accessToken);
         UserProfile user = getUserByClientId(clientId);
         checkPassword(user, dto.getNewPassword());
 
@@ -93,22 +105,13 @@ public class SessionService {
             throw new ApplicationException(ExceptionEnum.FORBIDDEN, "Password is EMPTY");
         }
         if(passwordEncoder.matches(password, user.getPassword()))
-            throw new ApplicationException(ExceptionEnum.CONFLICT, "Password is same");
+            throw new ApplicationException(ExceptionEnum.CONFLICT, "Password is SAME");
     }
 
-    private void updateUserProfile(Client client, String type) {
-        String code = genNewCode();
 
-        UserProfile user = userProfileRepository.findByClientId(client.getId())
-                .orElseGet(() -> createUserProfile(client));
-
-        if(type.equals("email"))
-            user.setLastCodeEmail(code);
-
-        if(type.equals("mobile"))
-            user.setLastCodeEmail(code);
-
-        userProfileRepository.save(user);
+    private UUID getClientUUID(String accessToken){
+        String token = accessToken.substring(7);
+        return jwtProvider.getClientIdFromToken(token);
     }
 
     private boolean checkValidateVerifyCode(UserProfile user, CodeDto dto){

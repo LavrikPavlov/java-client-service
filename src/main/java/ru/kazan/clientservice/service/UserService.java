@@ -39,12 +39,7 @@ public class UserService {
         if(!user.getRefreshToken().equals(token))
             throw new ApplicationException(ExceptionEnum.UNAUTHORIZED, "Refresh token not is invalid");
 
-        JwtResponse response = createResponseJwtWithTokens(user);
-
-        user.setRefreshToken(response.getRefreshToken());
-        userProfileRepository.save(user);
-
-        return response;
+        return createResponseJwtWithTokens(user);
     }
 
     @Transactional()
@@ -74,17 +69,14 @@ public class UserService {
 
         checkPasswordUser(user, password);
 
-        JwtResponse response = createResponseJwtWithTokens(user);
-        user.setRefreshToken(response.getRefreshToken());
-        userProfileRepository.save(user);
+       return createResponseJwtWithTokens(user);
 
-        return response;
     }
 
     @Transactional
     public JwtResponse loginWithPassport(String login, String password) {
-        String serial = login.substring(0, 3);
-        String number = login.substring(3, 9);
+        String serial = login.substring(0, 4);
+        String number = login.substring(4, 10);
 
         Client client = clientRepository.findClientByPassportSerialNumber(serial, number)
                 .orElseThrow(() -> new ApplicationException(ExceptionEnum.BAD_REQUEST, "Not Correct login"));
@@ -97,7 +89,7 @@ public class UserService {
     }
 
     private void checkPasswordUser(UserProfile user, String password) {
-        if (user.getPassword() == null) {
+        if (user.getPassword().isEmpty()) {
             throw new ApplicationException(ExceptionEnum.FORBIDDEN, "Password is NULL");
         }
         if (!passwordEncoder.matches(password, user.getPassword())) {
@@ -113,6 +105,9 @@ public class UserService {
     private JwtResponse createResponseJwtWithTokens(UserProfile user) {
         String accessToken = jwtProvider.genAccessToken(user);
         String refreshToken = jwtProvider.genRefreshToken(user);
+
+        user.setRefreshToken(refreshToken);
+        userProfileRepository.save(user);
 
         return new JwtResponse(
                 accessToken,
