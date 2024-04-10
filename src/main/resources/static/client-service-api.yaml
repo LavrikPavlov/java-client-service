@@ -11,13 +11,13 @@ paths:
       summary: Get client information
       description: Returns client information based on request type.
       parameters:
-        - name: clientId
-          in: query
-          description: Client's id for search info
+        - name: Authorization
+          in: header
+          description: Token for search info
           required: true
           schema:
             type: string
-          example: b3f62160-c084-41b1-8189-306d1906e2fb
+          example: Bearer token
         - name: type
           in: query
           description: Type of information ('short' or 'full')
@@ -35,11 +35,28 @@ paths:
                 $ref: '#/components/schemas/ResponseShortInfoDto'
         '400':
           description: Bad request
+        '401':
+          description: Unauthorized
 
   /client/edit/email:
     patch:
       summary: Edit client email
       description: Update client's email address.
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token for authorization
+          required: true
+          schema:
+            type: string
+          example: Bearer token
+        - name: Session
+          in: header
+          description: Session token for EMAIL
+          required: true
+          schema:
+            type: string
+          example: token
       requestBody:
         required: true
         content:
@@ -53,11 +70,28 @@ paths:
           description: OK
         '400':
           description: Bad request
+        '401':
+          description: Unauthorized
 
   /client/edit/mobile-phone:
     patch:
       summary: Edit client mobile phone
       description: Update client's mobile phone number.
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token for authorization
+          required: true
+          schema:
+            type: string
+          example: Bearer token
+        - name: Session
+          in: header
+          description: Session token for MOBILE
+          required: true
+          schema:
+            type: string
+          example: token
       requestBody:
         required: true
         content:
@@ -71,11 +105,21 @@ paths:
           description: OK
         '400':
           description: Bad request
+        '401':
+          description: Unauthorized
 
   /client/edit/address:
     put:
       summary: Add new address
       description: Add a new address for the client.
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token for authorization
+          required: true
+          schema:
+            type: string
+          example: Bearer token
       requestBody:
         required: true
         content:
@@ -89,10 +133,21 @@ paths:
           description: OK
         '400':
           description: Bad request
+        '401':
+          description: Unauthorized
+
   /client/edit/delete/address:
     delete:
       summary: Delete client address
       description: Deletes a client's address based on client and address ID.
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token for authorization
+          required: true
+          schema:
+            type: string
+          example: Bearer token
       requestBody:
         required: true
         content:
@@ -108,19 +163,235 @@ paths:
           description: Bad request
         '404':
           description: Address not found
-        '500':
-          description: Internal server error
+        '401':
+          description: Unauthorized
+
+  /session/verify:
+    post:
+      summary: Verify code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TypeCodeSendDto'
+      tags:
+        - SessionController (Контроллер для работы с сессией)
+      responses:
+        '200':
+          description: Verification successful
+        '400':
+          description: Bad request
+
+  /session/verify/email:
+      post:
+        summary: Verify email
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailWithCodeDtoImpl'
+        tags:
+          - SessionController (Контроллер для работы с сессией)
+        responses:
+          '400':
+            description: Bad request
+          '200':
+            description: Email verification successful
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/JwtSessionToken'
+  /session/verify/mobile:
+      post:
+        summary: Verify mobile phone
+
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MobilePhoneCodeDtoImpl'
+        tags:
+          - SessionController (Контроллер для работы с сессией)
+        responses:
+          '200':
+            description: Mobile phone verification successful
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/JwtSessionToken'
+  /session/password/new:
+      patch:
+        summary: Set new password
+        parameters:
+          - name: Session
+            in: header
+            description: Session token for MOBILE OR EMAIL
+            required: true
+            schema:
+              type: string
+            example: token
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordDto'
+        tags:
+          - SessionController (Контроллер для работы с сессией)
+        responses:
+          '200':
+            description: Password set successfully
+
+  /session/password/change:
+      patch:
+        summary: Change password
+        parameters:
+          - name: Authorization
+            in: header
+            description: Token for authorization
+            required: true
+            schema:
+              type: string
+            example: Bearer token
+          - name: Session
+            in: header
+            description: Session token for MOBILE OR EMAIL
+            required: true
+            schema:
+              type: string
+            example: token
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordDto'
+        tags:
+          - SessionController (Контроллер для работы с сессией)
+        responses:
+          '200':
+            description: Password changed successfully
+  /user/token:
+    patch:
+      summary: Refresh token
+      parameters:
+        - name: Refresh
+          in: header
+          description: Token for authorization
+          required: true
+          schema:
+            type: string
+          example: token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh:
+                  type: string
+              required:
+                - refresh
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtResponse'
+      tags:
+        - UserController (Контроллер для аунтифицкации/авторизации)
+  /user/auth:
+      post:
+        summary: Authenticate user
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginWithPasswordDto'
+        responses:
+          '200':
+            description: Authentication successful
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/JwtResponse'
+          '400':
+            description: Bad request
+        tags:
+          - UserController (Контроллер для аунтифицкации/авторизации)
+  /user/reg:
+      post:
+        summary: Register new user
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistrationClientDto'
+        responses:
+          '200':
+            description: User registered successfully
+        tags:
+          - UserController (Контроллер для аунтифицкации/авторизации)
+
+
+
+
 
 components:
   schemas:
+    JwtResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+    LoginWithPasswordDto:
+      type: object
+      properties:
+        login:
+          type: string
+        password:
+          type: string
+        type:
+          type: string
+          enum: [ EMAIL, MOBILE_PHONE, PASSPORT ]
+      required:
+        - login
+        - password
+        - type
+    RegistrationClientDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        patronymic:
+          type: string
+        email:
+          type: string
+        mobilePhone:
+          type: string
+        age:
+          type: integer
+      required:
+        - firstName
+        - lastName
+        - email
+        - mobilePhone
+        - age
+
     ResponseShortInfoDto:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
-          description: Уникальный идентификатор клиента
-          example: "7e0729ed-dc53-4ff7-b710-0ba6ebb65578"
         first_name:
           type: string
           description: Имя клиента
@@ -150,7 +421,6 @@ components:
           type: string
           example: "Подтвержденный"
       example:
-        id: "7e0729ed-dc53-4ff7-b710-0ba6ebb65578"
         first_name: "Алиса"
         last_name: "Акопова"
         patronymic: "Владимировна"
@@ -163,9 +433,6 @@ components:
     RequestEditEmailDto:
       type: object
       properties:
-        clientId:
-          type: string
-          example: "7e0729ed-dc53-4ff7-b710-0ba6ebb65578"
         newEmail:
           type: string
           example: "alisa-new-email@mail.ru"
@@ -176,24 +443,15 @@ components:
     RequestEditMobilePhoneDto:
       type: object
       properties:
-        clientId:
-          type: string
-          example: "7e0729ed-dc53-4ff7-b710-0ba6ebb65578"
         mobilePhone:
           type: string
           example: "89001231234"
       required:
         - mobilePhone
-        - clientId
 
     NewAddressDto:
       type: object
       properties:
-        clientId:
-          type: string
-          format: uuid
-          description: Уникальный идентификатор клиента
-          example: "7e0729ed-dc53-4ff7-b710-0ba6ebb65578"
         country:
           type: string
           description: Страна
@@ -215,7 +473,6 @@ components:
           description: Номер квартиры
           example: "47"
       required:
-        - clientId
         - country
         - city
         - street
@@ -224,15 +481,53 @@ components:
     DeleteAddressDto:
       type: object
       properties:
-        clientId:
-          type: string
-          format: uuid
-          description: Уникальный идентификатор клиента
-          example: "7e0729ed-dc53-4ff7-b710-0ba6ebb65578"
         addressId:
           type: integer
           description: Идентификатор адреса, который нужно удалить
           example: 4
       required:
-        - clientId
         - addressId
+
+    TypeCodeSendDto:
+      type: object
+      properties:
+        type:
+          type: string
+        contact:
+          type: string
+      required:
+        - type
+        - contact
+
+    EmailWithCodeDtoImpl:
+      type: object
+      properties:
+        email:
+          type: string
+        code:
+          type: string
+      required:
+        - email
+        - code
+    MobilePhoneCodeDtoImpl:
+      type: object
+      properties:
+        mobile:
+          type: string
+        code:
+          type: string
+      required:
+        - mobile
+        - code
+    PasswordDto:
+      type: object
+      properties:
+        newPassword:
+          type: string
+      required:
+        - password
+    JwtSessionToken:
+      type: object
+      properties:
+        session_token:
+          type: string
