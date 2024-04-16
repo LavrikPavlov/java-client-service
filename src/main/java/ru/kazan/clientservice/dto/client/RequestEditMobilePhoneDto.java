@@ -11,7 +11,7 @@ import lombok.*;
 @Builder
 public class RequestEditMobilePhoneDto {
 
-    @Pattern(regexp = "\\+7[0-9]{10}")
+    @Pattern(regexp = "8[0-9]{10}")
     @JsonProperty(value = "newMobilePhone")
     String mobilePhone;
 }
