@@ -1,7 +1,7 @@
 package ru.kazan.clientservice.dto.client;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 @Getter
@@ -11,7 +11,7 @@ import lombok.*;
 @Builder
 public class RequestEditMobilePhoneDto {
 
-    @Email
+    @Pattern(regexp = "8[0-9]{10}")
     @JsonProperty(value = "newMobilePhone")
     String mobilePhone;
 }

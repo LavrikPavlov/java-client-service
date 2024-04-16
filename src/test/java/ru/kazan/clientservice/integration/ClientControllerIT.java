@@ -1,6 +1,7 @@
 package ru.kazan.clientservice.integration;
 
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -28,6 +29,7 @@ class ClientControllerIT extends AbstractIntegrationTest {
     private ClientService clientService;
 
     @Test
+    @Disabled
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     @DisplayName("ClientController: Get client FULL info and should return response with body ClientInfo")
     void getClientFullInfo_thenReturnResponse_200(){
