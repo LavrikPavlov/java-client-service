@@ -13,7 +13,7 @@ import lombok.*;
 public class MobilePhoneCodeDtoImpl implements CodeDto{
 
     @NotNull
-    @Pattern(regexp = "\\+7[0-9]{10}")
+    @Pattern(regexp = "8[0-9]{10}")
     @JsonProperty("mobile_phone")
     private String contact;
 
