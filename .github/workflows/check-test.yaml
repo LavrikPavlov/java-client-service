@@ -10,7 +10,7 @@ on:
     branches:
       - developer
 jobs:
-  lint:
+  build-test:
     name: Build
     runs-on: ubuntu-latest
     steps:
@@ -24,20 +24,13 @@ jobs:
           java-version: 17
           cache: gradle
 
-
       - name: Run Docker Containers
         run: docker-compose up -d
 
-      - name: Gradle
-        run: chmod +x ./gradlew
-
-      - name: Build
+      - name: Gradle Build
         run: |
+          chmod +x ./gradlew
           ./gradlew clean build
-
-      - name: Test
-        run: |
-          ./gradlew test
 
 
 

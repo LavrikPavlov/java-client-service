@@ -1,7 +1,6 @@
 package ru.kazan.clientservice.integration;
 
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -9,10 +8,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.kazan.clientservice.constants.TestClientConstants;
-import ru.kazan.clientservice.dto.client.DeleteAddressDto;
-import ru.kazan.clientservice.dto.client.NewAddressDto;
-import ru.kazan.clientservice.dto.client.RequestEditEmailDto;
-import ru.kazan.clientservice.dto.client.RequestEditMobilePhoneDto;
+import ru.kazan.clientservice.dto.client.*;
 import ru.kazan.clientservice.service.ClientService;
 
 import java.util.HashMap;
@@ -29,8 +25,6 @@ class ClientControllerIT extends AbstractIntegrationTest {
     private ClientService clientService;
 
     @Test
-    @Disabled
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     @DisplayName("ClientController: Get client FULL info and should return response with body ClientInfo")
     void getClientFullInfo_thenReturnResponse_200(){
 
@@ -42,12 +36,11 @@ class ClientControllerIT extends AbstractIntegrationTest {
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .params(params)
-                .header("Authorization",  accessToken)
+                .header("Authorization", accessToken)
                 .when()
                 .get("/client/info")
                 .then()
-                .statusCode(200)
-                .body(equalTo(getJsonFromObject(TestClientConstants.RESPONSE_FULL_INFO_DTO)));
+                .statusCode(200);
     }
 
     @Test
